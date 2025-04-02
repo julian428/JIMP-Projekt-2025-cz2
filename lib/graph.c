@@ -49,6 +49,43 @@ Node* addNode(Node* first_node, int value, int position){
 	return new_node;
 }
 
+Node* transposeNodes(Node* first_node, int edges){
+	Node* t_nodes= (Node*)malloc(sizeof(Node));
+	t_nodes->value = first_node->value;
+	t_nodes->position = (first_node->position % edges)*edges + first_node->position / edges;
+	t_nodes->next = NULL;
+	first_node = first_node->next;
+
+	while(first_node){
+		int row = first_node->position / edges;
+		int column = first_node->position % edges;
+
+		addNode(t_nodes, first_node->value, column*edges + row);
+		first_node = first_node->next;
+	}
+
+	return t_nodes;
+}
+
+Node* addMatrixNodes(Node* start_a, Node* start_b, int edges){
+	Node* combined_nodes = (Node*)malloc(sizeof(Node));
+
+	while(start_a && start_b){
+		int a_pos = start_a->position;
+		int b_pos = start_b->position;
+
+		if(a_pos > b_pos){
+			addNode(combined_nodes, start_b->value, b_pos);
+			start_b = start_b->next;
+		}else{
+			addNode(combined_nodes, start_a->value, a_pos);
+			start_a = start_a->next;
+		}
+	}
+
+	return combined_nodes;
+}
+
 void printNodesAsMatrix(Node* first_node, int edges){
 	for(int i = 0; i < edges*edges; i++){
 		int val = 0;
@@ -61,3 +98,4 @@ void printNodesAsMatrix(Node* first_node, int edges){
 	}
 	printf("\n");
 }
+

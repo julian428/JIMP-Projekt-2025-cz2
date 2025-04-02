@@ -12,6 +12,8 @@ typedef struct Node_ {
 
 Node* graphToLaplacian(Node* adjecency_matrix, int edges);
 Node* addNode(Node* first_node, int value, int position);
+Node* transposeNodes(Node* first_node, int edges);
+Node* addMatrixNodes(Node* start_a, Node* start_b, int edges);
 void printNodesAsMatrix(Node* first_node, int edges);
 
 #endif
