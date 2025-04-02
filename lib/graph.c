@@ -16,26 +16,22 @@ Node* graphToLaplacian(Node* adjecency_matrix, int edges){
 	laplace_start->next = NULL;
 
 	int added_degree = 1;
-	int current_row = 0;
 	while(matrix_start){
-		current_row = matrix_start->position / edges;
-		int row_position = matrix_start->position % edges;
-		if(!added_degree && row_position > current_row){
-			addNode(laplace_start, degree_vector[current_row], current_row*edges + row_position);
-			added_degree = current_row+1;
+		int current_row = matrix_start->position/edges;
+		int current_column = matrix_start->position % edges;
+		
+		if((added_degree == current_row && current_column > current_row) || added_degree < current_row){
+			degree_vector[added_degree] && addNode(laplace_start, degree_vector[added_degree], added_degree*edges+added_degree);
+			added_degree++;
 			continue;
-		}else if(added_degree >= current_row){
-			added_degree = 0;
 		}
+
 		addNode(laplace_start, -1, matrix_start->position);
 		matrix_start = matrix_start->next;
 	}
-	for(int i = current_row; i < edges; i++) {
-		if(added_degree){
-			added_degree = 0;
-			continue;
-		}
-		addNode(laplace_start, degree_vector[i], i*edges + i);
+
+	for(;added_degree < edges; added_degree++){
+		addNode(laplace_start, degree_vector[added_degree], added_degree*edges + added_degree);
 	}
 
 	free(degree_vector);
