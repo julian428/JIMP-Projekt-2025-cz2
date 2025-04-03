@@ -80,6 +80,7 @@ Node* addMatrixNodes(Node* start_a, Node* start_b, int edges){
 	Node* combined_nodes = (Node*)malloc(sizeof(Node));
 	int a_pos = start_a->position;
 	int b_pos = start_b->position;
+
 	combined_nodes->position = a_pos > b_pos ? b_pos : a_pos;
 	combined_nodes->value = a_pos > b_pos ? start_b->value : start_a->value;
 	if(a_pos > b_pos) start_b = start_b->next;
@@ -105,7 +106,7 @@ void printNodesAsMatrix(Node* first_node, int edges){
 	for(int i = 0; i < edges*edges; i++){
 		int val = 0;
 		if(first_node && first_node->position == i) {
-			val = 1;
+			val = first_node->value;
 			first_node = first_node->next;
 		}
 		if(i % edges == 0) printf("\n");
