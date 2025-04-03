@@ -7,14 +7,9 @@
 typedef struct Node_ {
 	int value;
 	int position; // Position in 1D array
-	struct Node_ *next;
 } Node;
 
-Node* graphToLaplacian(Node* adjecency_matrix, int edges);
-Node* addNode(Node* first_node, int value, int position);
-Node* transposeNodes(Node* first_node, int edges);
-Node* addMatrixNodes(Node* start_a, Node* start_b, int edges);
-Node* sortNodesByPosition(Node* first_node, int edges);
-void printNodesAsMatrix(Node* first_node, int edges);
+void printSparseMatrix(Node* nodes, int vertesies, int edges);
+Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges);
 
 #endif
