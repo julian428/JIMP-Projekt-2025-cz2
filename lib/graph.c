@@ -19,20 +19,26 @@ Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges){
 
 	Node* laplacian = (Node*)malloc((edges + vertesies) * sizeof(Node));
 
-	for(int deg = 0, n = 0, i = 0; deg < vertesies && n < edges; i++){
+	int deg = 0, lap = 0;
+	for(int n = 0; deg < vertesies && n < edges; lap++){
 		int node_row = sparce_matrix[n].position / vertesies;
 		int node_column = sparce_matrix[n].position % vertesies;
 
 		if(deg < node_row || node_column > node_row && node_row == deg){
-			laplacian[i].position = deg*vertesies + deg;
-			laplacian[i].value = degree_vector[deg++];
+			laplacian[lap].position = deg*vertesies + deg;
+			laplacian[lap].value = degree_vector[deg++];
 		}
 		else{
-			laplacian[i].position = sparce_matrix[n].position;
-			laplacian[i].value = -sparce_matrix[n++].value;
+			laplacian[lap].position = sparce_matrix[n].position;
+			laplacian[lap].value = -sparce_matrix[n++].value;
 		}
 	}
 
+	while(deg < vertesies){
+		laplacian[lap].position = deg * vertesies + deg;
+		laplacian[lap++].value = degree_vector[deg++];
+	}
+	
 	free(degree_vector);
 	return laplacian;
 }
