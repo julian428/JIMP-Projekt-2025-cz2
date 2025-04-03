@@ -4,11 +4,13 @@ Node* graphToLaplacian(Node* adjecency_matrix, int edges){
 	int* degree_vector = (int*)calloc(edges, sizeof(int));
 	Node* matrix_start = adjecency_matrix;
 
-	while(adjecency_matrix){
-		int current_row = adjecency_matrix->position / edges;
+	while(matrix_start){
+		int current_row = matrix_start->position / edges;
 		degree_vector[current_row]++;
-		adjecency_matrix = adjecency_matrix->next;
+		matrix_start = matrix_start->next;
 	}
+
+	matrix_start = adjecency_matrix;
 
 	Node* laplace_start = (Node*)malloc(sizeof(Node));
 	laplace_start->position = 0;
@@ -54,25 +56,38 @@ Node* transposeNodes(Node* first_node, int edges){
 	t_nodes->value = first_node->value;
 	t_nodes->position = (first_node->position % edges)*edges + first_node->position / edges;
 	t_nodes->next = NULL;
-	first_node = first_node->next;
+	Node *matrix_start = first_node->next;
 
-	while(first_node){
-		int row = first_node->position / edges;
-		int column = first_node->position % edges;
+	while(matrix_start){
+		int row = matrix_start->position / edges;
+		int column = matrix_start->position % edges;
 
-		addNode(t_nodes, first_node->value, column*edges + row);
-		first_node = first_node->next;
+		addNode(t_nodes, matrix_start->value, column*edges + row);
+		matrix_start = matrix_start->next;
 	}
 
 	return t_nodes;
 }
 
+Node* sortNodesByPosition(Node* first_node, int edges){
+	while(1){
+		break;
+	}
+	return first_node;
+}
+
 Node* addMatrixNodes(Node* start_a, Node* start_b, int edges){
 	Node* combined_nodes = (Node*)malloc(sizeof(Node));
+	int a_pos = start_a->position;
+	int b_pos = start_b->position;
+	combined_nodes->position = a_pos > b_pos ? b_pos : a_pos;
+	combined_nodes->value = a_pos > b_pos ? start_b->value : start_a->value;
+	if(a_pos > b_pos) start_b = start_b->next;
+	else start_a = start_a->next;
 
 	while(start_a && start_b){
-		int a_pos = start_a->position;
-		int b_pos = start_b->position;
+		a_pos = start_a->position;
+		b_pos = start_b->position;
 
 		if(a_pos > b_pos){
 			addNode(combined_nodes, start_b->value, b_pos);
