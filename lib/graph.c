@@ -1,6 +1,14 @@
 #include "graph.h"
 
 void printSparseMatrix(Node* sparse_matrix, int vertesies, int edges){
+	if(vertesies > 10){
+		printf("Matrix too large to print.\nPrinting only edges.\n");
+		for(int i = 0; i < edges; i++){
+			printf("{ row: %d; col: %d; val: %d; pos: %d }\n", sparse_matrix[i].position / vertesies, sparse_matrix[i].position % vertesies, sparse_matrix[i].value, sparse_matrix[i].position);
+		}
+		return;
+	}
+
 	for(int i = 0, n = 0; i < vertesies*vertesies; i++){
 		int val = 0;
 		if(i == sparse_matrix[n].position) val = sparse_matrix[n++].value;
@@ -43,7 +51,48 @@ Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges){
 	return laplacian;
 }
 
-int* getEigenSmallestVectors(){
-	return NULL;
+int comparenodes(const void *a, const void *b) {
+    return ((Node*)a)->position - ((Node*)b)->position;
 }
 
+int compareEigenNodes(const void *a, const void *b) {
+    double diff = ((EigenNode *)a)->value - ((EigenNode *)b)->value;
+    return (diff > 0) - (diff < 0); // Returns -1, 0, or 1
+}
+
+void clusterEigenvector(double *eigenvector, int size, int k, double percentage) {
+	// zaminiam podaną tablice wektorową na tablicę struct-ów
+    EigenNode *nodes = (EigenNode *)malloc(size * sizeof(EigenNode));
+    if (!nodes) {
+        fprintf(stderr, "Nie udało się zaalokować pamięci na wektor własny.\n");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < size; i++) {
+        nodes[i].index = i;
+        nodes[i].value = eigenvector[i];
+    }
+
+    qsort(nodes, size, sizeof(EigenNode), compareEigenNodes);
+
+    int idealSize = size / k;
+    int minSize = (int)(idealSize * (1 - percentage / 100.0));
+    int maxSize = (int)(idealSize * (1 + percentage / 100.0));
+
+    printf("Klastry:\n");
+    int count = 0, clusterCount = 0;
+    printf("{ "); 
+
+    for (int i = 0; i < size; i++) {
+        printf("%d ", nodes[i].index);
+        count++;
+
+        if (count >= idealSize && clusterCount < k - 1) {
+            printf("} \n{ ");
+            count = 0;
+            clusterCount++;
+        }
+    }
+    printf("}\n");
+
+    free(nodes);
+}
