@@ -3,6 +3,48 @@
 void solveSparseSystem(Node *matrix, int nnz, double *b, double *x, int n) {
     double *x_new = (double *)malloc(n * sizeof(double));
 
+    // --- Step 0: Ensure diagonals exist and aren't zero ---
+    // We'll patch zero or missing diagonals with EPSILON
+    int *has_diagonal = (int *)calloc(n, sizeof(int));
+    for (int k = 0; k < nnz; k++) {
+        int pos = matrix[k].position;
+        int row = pos / n;
+        int col = pos % n;
+        if (row == col) {
+            has_diagonal[row] = 1;
+            if (fabs(matrix[k].value) < EPSILON) {
+                matrix[k].value = EPSILON;
+            }
+        }
+    }
+
+    // Count how many new diagonals we’ll need
+    int extra_diagonals = 0;
+    for (int i = 0; i < n; i++) {
+        if (!has_diagonal[i]) extra_diagonals++;
+    }
+
+    // Expand matrix if needed
+    if (extra_diagonals > 0) {
+        matrix = realloc(matrix, (nnz + extra_diagonals) * sizeof(Node));
+        if (!matrix) {
+            fprintf(stderr, "Failed to reallocate matrix\n");
+            exit(1);
+        }
+        for (int i = 0; i < n; i++) {
+            if (!has_diagonal[i]) {
+                matrix[nnz].position = i * n + i;
+                matrix[nnz].value = EPSILON;
+                nnz++;
+            }
+        }
+    }
+
+    free(has_diagonal);
+
+    // --- Iterative solver (Jacobi method) ---
+    for (int i = 0; i < n; i++) x[i] = 0.0;
+
     for (int iter = 0; iter < MAX_ITER; iter++) {
         for (int i = 0; i < n; i++) x_new[i] = b[i];
 
@@ -10,9 +52,9 @@ void solveSparseSystem(Node *matrix, int nnz, double *b, double *x, int n) {
             int row = matrix[k].position / n;
             int col = matrix[k].position % n;
 
-            if (row == col) continue;
-
-            x_new[row] -= matrix[k].value * x[col];
+            if (row != col) {
+                x_new[row] -= matrix[k].value * x[col];
+            }
         }
 
         for (int k = 0; k < nnz; k++) {
@@ -20,10 +62,6 @@ void solveSparseSystem(Node *matrix, int nnz, double *b, double *x, int n) {
             int col = matrix[k].position % n;
 
             if (row == col) {
-                if (fabs(matrix[k].value) < 1e-12) {
-                    printf("Matrix is singular or nearly singular.\n");
-                    exit(1);
-                }
                 x_new[row] /= matrix[k].value;
             }
         }
@@ -45,7 +83,6 @@ void normalize(double *v, int n) {
     norm = sqrt(norm);
 
     if (norm < 1e-12) {
-        printf("Warning: Zero norm encountered during normalization.\n");
         exit(1);
     }
 

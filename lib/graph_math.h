@@ -9,6 +9,7 @@
 
 #define TOL 1e-6
 #define MAX_ITER 1000
+#define EPSILON 1
 
 void solveSparseSystem(Node *matrix, int nnz, double *b, double *x, int n);
 void normalize(double *v, int n);
