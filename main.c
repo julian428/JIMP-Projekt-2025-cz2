@@ -1,4 +1,5 @@
 #include "lib/graph.h"
+#include "lib/graph_math.h"
 
 int main(int argc, char** argv){
 	int nodes = 6;
@@ -26,7 +27,19 @@ int main(int argc, char** argv){
 
 	Node* laplacian = sparseMatrixToLaplacian(adjc, nodes, edges);
 	printSparseMatrix(laplacian, nodes, edges);
+	
+	double *eigenvector = malloc(nodes * sizeof(double));
+  double eigenvalue;
 
+  inversePowerMethod(laplacian, edges, eigenvector, &eigenvalue, nodes);
+
+  printf("\nSmallest Eigenvalue: %lf\n", eigenvalue);
+  printf("\nCorresponding Eigenvector:\n");
+  for (int i = 0; i < nodes; i++) {
+      printf("%lf\n", eigenvector[i]);
+  }
+
+  free(eigenvector);
 	free(adjc);
 	free(laplacian);
 	return 0;

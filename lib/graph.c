@@ -43,3 +43,7 @@ Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges){
 	return laplacian;
 }
 
+int* getEigenSmallestVectors(){
+	return NULL;
+}
+
