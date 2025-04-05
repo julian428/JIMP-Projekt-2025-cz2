@@ -3,8 +3,6 @@
 void solveSparseSystem(Node *matrix, int nnz, double *b, double *x, int n) {
     double *x_new = (double *)malloc(n * sizeof(double));
 
-    // --- Step 0: Ensure diagonals exist and aren't zero ---
-    // We'll patch zero or missing diagonals with EPSILON
     int *has_diagonal = (int *)calloc(n, sizeof(int));
     for (int k = 0; k < nnz; k++) {
         int pos = matrix[k].position;
@@ -18,13 +16,11 @@ void solveSparseSystem(Node *matrix, int nnz, double *b, double *x, int n) {
         }
     }
 
-    // Count how many new diagonals we’ll need
     int extra_diagonals = 0;
     for (int i = 0; i < n; i++) {
         if (!has_diagonal[i]) extra_diagonals++;
     }
 
-    // Expand matrix if needed
     if (extra_diagonals > 0) {
         matrix = realloc(matrix, (nnz + extra_diagonals) * sizeof(Node));
         if (!matrix) {
@@ -42,7 +38,6 @@ void solveSparseSystem(Node *matrix, int nnz, double *b, double *x, int n) {
 
     free(has_diagonal);
 
-    // --- Iterative solver (Jacobi method) ---
     for (int i = 0; i < n; i++) x[i] = 0.0;
 
     for (int iter = 0; iter < MAX_ITER; iter++) {

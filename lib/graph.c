@@ -78,21 +78,19 @@ void clusterEigenvector(double *eigenvector, int size, int k, double percentage)
     int minSize = (int)(idealSize * (1 - percentage / 100.0));
     int maxSize = (int)(idealSize * (1 + percentage / 100.0));
 
-    printf("Klastry:\n");
     int count = 0, clusterCount = 0;
-    printf("{ "); 
 
     for (int i = 0; i < size; i++) {
-        printf("%d ", nodes[i].index);
+        printf("%3d ", nodes[i].index);
         count++;
 
         if (count >= idealSize && clusterCount < k - 1) {
-            printf("} \n{ ");
+            printf("\n");
             count = 0;
             clusterCount++;
         }
     }
-    printf("}\n");
+    printf("\n");
 
     free(nodes);
 }
