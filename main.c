@@ -26,30 +26,23 @@ int main(int argc, char** argv){
 	adjc[14].value = 1; adjc[14].position = 33;
 	adjc[15].value = 1; adjc[15].position = 34;*/
 	
+	createGraphFile();
 
 	FILE* file = fopen("jimp2/projekt-4/output.txt", "r");
 	Node* adjc = fileToSparseMatrix(file, &nodes, &edges);
 	int new_edges = 0;
 	adjc = makeSymmetric(adjc, edges, nodes, &new_edges);
 	edges = new_edges;
-	printSparseMatrix(adjc, nodes, edges);
 
 	Node* laplacian = sparseMatrixToLaplacian(adjc, nodes, edges);
   qsort(laplacian, edges, sizeof(Node), comparenodes);
-	printSparseMatrix(laplacian, nodes, edges);
 	
 	double *eigenvector = malloc(nodes * sizeof(double));
   double eigenvalue;
 
   inversePowerMethod(laplacian, edges, eigenvector, &eigenvalue, nodes);
 
-  printf("\nSmallest Eigenvalue: %lf\n", eigenvalue);
-  printf("\nCorresponding Eigenvector:\n");
-  for (int i = 0; i < nodes; i++) {
-      printf("%lf\n", eigenvector[i]);
-  }
-
-	clusterEigenvector(eigenvector, nodes, 3, 10.0);
+  clusterEigenvector(eigenvector, nodes, 4, 10.0);
 
   free(eigenvector);
 	free(adjc);
