@@ -8,7 +8,7 @@
 int main(int argc, char** argv){
 	int nodes = 6;
 	int edges = 16;	
-	char* output_file = "output.txt";
+	char* output_file = "clusters.txt";
 	char* input_file = "jimp2/projekt-4/dane/graf.csrrg";
 	int cluster_count = 2;
 	double percentage = 10.0;
@@ -41,9 +41,9 @@ int main(int argc, char** argv){
 	if(new_cluster_count) cluster_count = atoi(new_cluster_count);
 	if(new_percentage) percentage = atof(new_percentage);
 	
-	createGraphFile(input_file, output_file);
+	createGraphFile(input_file, "output.txt");
 
-	FILE* file = fopen(output_file, "r");
+	FILE* file = fopen("output.txt", "r");
 	Node* adjc = fileToSparseMatrix(file, &nodes, &edges);
 	int new_edges = 0;
 	adjc = makeSymmetric(adjc, edges, nodes, &new_edges);
@@ -57,7 +57,8 @@ int main(int argc, char** argv){
 
   inversePowerMethod(laplacian, edges, eigenvector, &eigenvalue, nodes);
 
-  clusterEigenvector(eigenvector, nodes, cluster_count, percentage);
+	FILE* clusters_file = fopen(output_file, "w");
+  clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
 
   free(eigenvector);
 	free(adjc);
