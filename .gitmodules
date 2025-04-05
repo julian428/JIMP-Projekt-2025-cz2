@@ -1,0 +1,3 @@
+[submodule "jimp2"]
+	path = jimp2
+	url = https://github.com/yallxe/jimp2
