@@ -28,7 +28,7 @@ int main(int argc, char** argv){
 	
 	createGraphFile();
 
-	FILE* file = fopen("jimp2/projekt-4/output.txt", "r");
+	FILE* file = fopen("output.txt", "r");
 	Node* adjc = fileToSparseMatrix(file, &nodes, &edges);
 	int new_edges = 0;
 	adjc = makeSymmetric(adjc, edges, nodes, &new_edges);
