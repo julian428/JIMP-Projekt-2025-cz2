@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wextra -g
 LDFLAGS = -lm
 
-SRC = main.c lib/graph.c lib/graph_math.c lib/read_graph.c
+SRC = main.c lib/graph.c lib/graph_math.c lib/read_graph.c lib/utils.c
 OBJ = $(patsubst %.c,bin/%.o,$(SRC))
 EXEC = bin/divide_graph
 SUBMODULE = jimp2/projekt-4
