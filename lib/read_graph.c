@@ -1,7 +1,9 @@
 #include "read_graph.h"
 
-void createGraphFile(){
-	system("./jimp2/projekt-4/bin/graphdecoder jimp2/projekt-4/dane/graf.csrrg > output.txt");
+int createGraphFile(char* input_file, char* output_file){
+	char buffer[512];
+	sprintf(buffer, "./jimp2/projekt-4/bin/graphdecoder %s > %s", input_file, output_file);
+	return system(buffer);
 }
 
 int countNodesInFile(FILE* file){
