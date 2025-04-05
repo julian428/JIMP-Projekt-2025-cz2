@@ -13,7 +13,7 @@ void printSparseMatrix(Node* sparse_matrix, int vertesies, int edges){
 		int val = 0;
 		if(i == sparse_matrix[n].position) val = sparse_matrix[n++].value;
 		if(i % vertesies == 0) printf("\n");
-		printf("%d ", val);
+		printf("%2d ", val);
 	}
 	printf("\n");
 }

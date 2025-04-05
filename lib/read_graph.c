@@ -22,16 +22,16 @@ int countNodesInFile(FILE* file){
 
 Node* fileToSparseMatrix(FILE* file, int* foreign_nodes, int* foreign_edges){
 	int nodes = countNodesInFile(file);
-	int from, to, s;
+	int from, to;
 	long start_of_edges = ftell(file);
 	int edges = 0;
-	while((s = fscanf(file, " %d - %d\n", &from, &to)) == 2) edges++; // licze ile krawędzi
+	while(fscanf(file, " %d - %d\n", &from, &to) == 2) edges++; // licze ile krawędzi
 
 	fseek(file, start_of_edges, SEEK_SET); // wracam na początek deklaracji krawędzi
 	Node* sparse_matrix = (Node*)malloc(edges * sizeof(Node));
-	for(int i = 0; (s = fscanf(file, " %d - %d\n", &from, &to)) == 2; i++){
+	for(int i = 0; fscanf(file, " %d - %d\n", &from, &to) == 2; i++){
 		sparse_matrix[i].value = 1;
-		sparse_matrix[i].position = from * edges + to;
+		sparse_matrix[i].position = from * nodes + to;
 	}
 	
 	*foreign_nodes = nodes;
@@ -51,46 +51,22 @@ int findEdge(Node *array, int n, int position) {
 }
 
 Node *makeSymmetric(Node *array, int n, int matrix_size, int *newSize) {
-	// sortuje żeby wyszukiwanie binarne dobrze działało
-    qsort(array, n, sizeof(Node), comparenodes);
+  int capacity = n * 2;
+  Node *symmetricArray = (Node *)malloc(capacity * sizeof(Node));
+  if (!symmetricArray) {
+    fprintf(stderr, "Nie udało się zaalokować pamięci na powiększoną macierz symetryczną.\n");
+    exit(EXIT_FAILURE);
+  }
 
-    int capacity = n * 2;
-    Node *symmetricArray = (Node *)malloc(capacity * sizeof(Node));
-    if (!symmetricArray) {
-        fprintf(stderr, "Nie udało się zaalokować pamięci na powiększoną macierz symetryczną.\n");
-        exit(EXIT_FAILURE);
-    }
+	for(int i = 0; i < capacity; i+=2){
+		symmetricArray[i] = array[i/2];
+		symmetricArray[i+1].value = array[i/2].value;
+		symmetricArray[i+1].position = (array[i/2].position % matrix_size) * matrix_size + array[i/2].position / matrix_size;
+	}
 
-    int count = 0;
+	*newSize = capacity;
+	
+	qsort(symmetricArray, capacity, sizeof(Node), comparenodes);
 
-    for (int i = 0; i < n; i++) {
-        symmetricArray[count++] = array[i];
-
-        int row = array[i].position / matrix_size;
-        int col = array[i].position % matrix_size;
-
-        int symmetric_position = col * matrix_size + row;
-
-        // Sprawdzam czy jest symetria z aktualnym punktem
-        if (findEdge(array, n, symmetric_position) == -1) {
-            if (count >= capacity) {
-                capacity *= 2;
-                symmetricArray = (Node *)realloc(symmetricArray, capacity * sizeof(Node));
-                if (!symmetricArray) {
-                    fprintf(stderr, "Nie udało się zwiększyć pamięci dla symetrycznej macierzy.\n");
-                    exit(EXIT_FAILURE);
-                }
-            }
-            Node newNode;
-            newNode.value = array[i].value;
-            newNode.position = symmetric_position;
-            symmetricArray[count++] = newNode;
-        }
-    }
-
-    // Zmniejszam rozmiar tablicy na odpowiednią
-    *newSize = count;
-    symmetricArray = (Node *)realloc(symmetricArray, count * sizeof(Node));
-
-    return symmetricArray;
+  return symmetricArray;
 }
