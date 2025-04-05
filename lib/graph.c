@@ -13,7 +13,7 @@ void printSparseMatrix(Node* sparse_matrix, int vertesies, int edges){
 		int val = 0;
 		if(i == sparse_matrix[n].position) val = sparse_matrix[n++].value;
 		if(i % vertesies == 0) printf("\n");
-		printf("%2d ", val);
+		printf("%d ", val);
 	}
 	printf("\n");
 }
@@ -81,7 +81,7 @@ void clusterEigenvector(FILE* output_file, double *eigenvector, int size, int k,
     int count = 0, clusterCount = 0;
 
     for (int i = 0; i < size; i++) {
-        fprintf(output_file, "%3d ", nodes[i].index);
+        fprintf(output_file, "%d ", nodes[i].index);
         count++;
 
         if (count >= idealSize && clusterCount < k - 1) {
