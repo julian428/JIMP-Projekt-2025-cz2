@@ -41,13 +41,17 @@ int main(int argc, char** argv){
 	if(new_cluster_count) cluster_count = atoi(new_cluster_count);
 	if(new_percentage) percentage = atof(new_percentage);
 	
-	createGraphFile(input_file, "output.txt");
+	int res = createGraphFile(input_file, "output.txt");
+	if(res != 0) return 1;
 
 	FILE* file = fopen("output.txt", "r");
 	Node* adjc = fileToSparseMatrix(file, &nodes, &edges);
+	printSparseMatrix(adjc, nodes, edges);
+
 	int new_edges = 0;
 	adjc = makeSymmetric(adjc, edges, nodes, &new_edges);
 	edges = new_edges;
+	printSparseMatrix(adjc, nodes, edges);
 
 	Node* laplacian = sparseMatrixToLaplacian(adjc, nodes, edges);
   qsort(laplacian, edges, sizeof(Node), comparenodes);
