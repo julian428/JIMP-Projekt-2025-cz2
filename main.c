@@ -55,6 +55,7 @@ int main(int argc, char** argv){
 
 	Node* laplacian = sparseMatrixToLaplacian(adjc, nodes, edges);
   qsort(laplacian, edges, sizeof(Node), comparenodes);
+	printSparseMatrix(laplacian, nodes, edges);
 	
 	double *eigenvector = malloc(nodes * sizeof(double));
   double eigenvalue;
