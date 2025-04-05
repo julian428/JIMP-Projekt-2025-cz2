@@ -13,7 +13,7 @@ void printSparseMatrix(Node* sparse_matrix, int vertesies, int edges){
 		int val = 0;
 		if(i == sparse_matrix[n].position) val = sparse_matrix[n++].value;
 		if(i % vertesies == 0) printf("\n");
-		printf("%2d ", val);
+		printf("%d ", val);
 	}
 	printf("\n");
 }
@@ -60,7 +60,7 @@ int compareEigenNodes(const void *a, const void *b) {
     return (diff > 0) - (diff < 0); // Returns -1, 0, or 1
 }
 
-void clusterEigenvector(double *eigenvector, int size, int k, double percentage) {
+void clusterEigenvector(FILE* output_file, double *eigenvector, int size, int k, double percentage) {
 	// zaminiam podaną tablice wektorową na tablicę struct-ów
     EigenNode *nodes = (EigenNode *)malloc(size * sizeof(EigenNode));
     if (!nodes) {
@@ -81,16 +81,16 @@ void clusterEigenvector(double *eigenvector, int size, int k, double percentage)
     int count = 0, clusterCount = 0;
 
     for (int i = 0; i < size; i++) {
-        printf("%3d ", nodes[i].index);
+        fprintf(output_file, "%d ", nodes[i].index);
         count++;
 
         if (count >= idealSize && clusterCount < k - 1) {
-            printf("\n");
+            fprintf(output_file, "\n");
             count = 0;
             clusterCount++;
         }
     }
-    printf("\n");
+    fprintf(output_file, "\n");
 
     free(nodes);
 }

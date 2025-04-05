@@ -22,6 +22,6 @@ void printSparseMatrix(Node* nodes, int vertesies, int edges);
 Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges);
 int comparenodes(const void *a, const void *b);
 int compareEigenNodes(const void *a, const void *b);
-void clusterEigenvector(double *eigenvector, int size, int k, double percentage);
+void clusterEigenvector(FILE* output_file, double *eigenvector, int size, int k, double percentage);
 
 #endif
