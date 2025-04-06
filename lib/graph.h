@@ -18,10 +18,8 @@ typedef struct {
 
 #include "read_graph.h"
 
-void printSparseMatrix(Node* nodes, int vertesies, int edges);
 Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges);
-int comparenodes(const void *a, const void *b);
-int compareEigenNodes(const void *a, const void *b);
-void clusterEigenvector(FILE* output_file, double *eigenvector, int size, int k, double percentage);
+int findEdge(Node *array, int n, int position);
+Node *makeSymmetric(Node *array, int n, int matrix_size, int *newSize);
 
 #endif
