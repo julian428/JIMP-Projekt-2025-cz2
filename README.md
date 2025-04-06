@@ -230,3 +230,5 @@ Wynikiem przykładu jest podział na dwa klastry:
 ```
 
 ## Dokumentacja algorytmiczna
+
+Algorytmem używanym do dzielenia grafu jest `Spectral Clustering`. Algorytm ten umożliwia podział na podstawi dowolnej macierzy podobieństwa zawierającej informacje na temat powiązania pomiędzy danymi wierzchołkami. W tym programie macierzą podobieństwa jest macierz sąsiedztwa.
