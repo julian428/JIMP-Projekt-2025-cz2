@@ -2,10 +2,10 @@
 
 void printSparseMatrix(Node* sparse_matrix, int vertesies, int edges){
 	if(vertesies > 10){
-		printf("Matrix too large to print.\nPrinting only edges.\n");
-		for(int i = 0; i < edges; i++){
+		printf("Matrix too large to print.\n");
+		/*for(int i = 0; i < edges; i++){
 			printf("{ row: %d; col: %d; val: %d; pos: %d }\n", sparse_matrix[i].position / vertesies, sparse_matrix[i].position % vertesies, sparse_matrix[i].value, sparse_matrix[i].position);
-		}
+		}*/
 		return;
 	}
 
