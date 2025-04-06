@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #include "graph.h"
 
@@ -11,9 +12,10 @@
 #define MAX_ITER 1000
 #define EPSILON 0.1
 
-void solveSparseSystem(Node *matrix, int nnz, double *b, double *x, int n);
-void normalize(double *v, int n);
-double dotProduct(double *v1, double *v2, int n);
-void inversePowerMethod(Node *matrix, int nnz, double *eigenvector, double *eigenvalue, int n);
+int getValueAtPosition(Node* sparse_matrix, int edges, int position);
+double normalizedVectorDifference(double* a, double* b, int nodes);
+void normalizeVector(double* vector, int nodes);
+double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x);
+double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges);
 
 #endif

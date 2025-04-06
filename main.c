@@ -36,14 +36,12 @@ int main(int argc, char** argv){
 	printSparseMatrix(adjc, nodes, edges);
 
 	Node* laplacian = sparseMatrixToLaplacian(adjc, nodes, edges);
+	edges += nodes;
   qsort(laplacian, edges, sizeof(Node), comparenodes);
 	printSparseMatrix(laplacian, nodes, edges);
 	
-	double *eigenvector = malloc(nodes * sizeof(double));
-  double eigenvalue;
-
-  inversePowerMethod(laplacian, edges, eigenvector, &eigenvalue, nodes);
-
+	double* eigenvector = inversePowerIteration(laplacian, nodes, edges);
+	
 	FILE* clusters_file = fopen(output_file, "w");
   clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
 

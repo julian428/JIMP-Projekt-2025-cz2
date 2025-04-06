@@ -1,134 +1,92 @@
 #include "graph_math.h"
 
-void solveSparseSystem(Node *matrix, int nnz, double *b, double *x, int n) {
-    double *x_new = (double *)malloc(n * sizeof(double));
+int getValueAtPosition(Node* sparse_matrix, int edges, int position){
+	for(int i = 0; i < edges; i++){
+		if(sparse_matrix[i].position != position) continue;
+		return sparse_matrix[i].value;
+	}
 
-    int *has_diagonal = (int *)calloc(n, sizeof(int));
-    for (int k = 0; k < nnz; k++) {
-        int pos = matrix[k].position;
-        int row = pos / n;
-        int col = pos % n;
-        if (row == col) {
-            has_diagonal[row] = 1;
-            if (fabs(matrix[k].value) < EPSILON) {
-                matrix[k].value = EPSILON;
-            }
-        }
-    }
-
-    int extra_diagonals = 0;
-    for (int i = 0; i < n; i++) {
-        if (!has_diagonal[i]) extra_diagonals++;
-    }
-
-    if (extra_diagonals > 0) {
-        matrix = realloc(matrix, (nnz + extra_diagonals) * sizeof(Node));
-        if (!matrix) {
-            fprintf(stderr, "Failed to reallocate matrix\n");
-            exit(1);
-        }
-        for (int i = 0; i < n; i++) {
-            if (!has_diagonal[i]) {
-                matrix[nnz].position = i * n + i;
-                matrix[nnz].value = EPSILON;
-                nnz++;
-            }
-        }
-    }
-
-    free(has_diagonal);
-
-    for (int i = 0; i < n; i++) x[i] = 0.0;
-
-    for (int iter = 0; iter < MAX_ITER; iter++) {
-        for (int i = 0; i < n; i++) x_new[i] = b[i];
-
-        for (int k = 0; k < nnz; k++) {
-            int row = matrix[k].position / n;
-            int col = matrix[k].position % n;
-
-            if (row != col) {
-                x_new[row] -= matrix[k].value * x[col];
-            }
-        }
-
-        for (int k = 0; k < nnz; k++) {
-            int row = matrix[k].position / n;
-            int col = matrix[k].position % n;
-
-            if (row == col) {
-                x_new[row] /= matrix[k].value;
-            }
-        }
-
-        double max_diff = 0.0;
-        for (int i = 0; i < n; i++) {
-            max_diff = fmax(max_diff, fabs(x_new[i] - x[i]));
-            x[i] = x_new[i];
-        }
-        if (max_diff < TOL) break;
-    }
-
-    free(x_new);
+	return 0;
 }
 
-void normalize(double *v, int n) {
-    double norm = 0;
-    for (int i = 0; i < n; i++) norm += v[i] * v[i];
-    norm = sqrt(norm);
+double normalizedVectorDifference(double* a, double* b, int nodes){
+	double sum = 0;
+	for(int i = 0; i < nodes; i++){
+		double diff = a[i] - b[i];
+		sum += diff * diff;
+	}
 
-    if (norm < 1e-12) {
-        exit(1);
-    }
-
-    for (int i = 0; i < n; i++) v[i] /= norm;
+	return sqrt(sum);
 }
 
-double dotProduct(double *v1, double *v2, int n) {
-    double sum = 0;
-    for (int i = 0; i < n; i++) sum += v1[i] * v2[i];
-    return sum;
+void normalizeVector(double* vector, int nodes){
+	double norm = 0;
+	for(int i = 0; i < nodes; i++) norm += vector[i] * vector[i];
+	norm = sqrt(norm);
+
+	if(norm == 0) return;
+	for(int i = 0; i < nodes; i++) vector[i] /= norm;
 }
 
-void inversePowerMethod(Node *matrix, int nnz, double *eigenvector, double *eigenvalue, int n) {
-    double *y = malloc(n * sizeof(double));
-    double *x = malloc(n * sizeof(double));
+double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
+	double *solution = calloc(nodes, sizeof(double));
+	double *previous_solution = calloc(nodes, sizeof(double));
 
-    // Inicjalizacja z losowym wektorem
-    for (int i = 0; i < n; i++) x[i] = ((double)rand() / RAND_MAX) * 2.0 - 1.0;
-    normalize(x, n);
+	for(int i = 0; i < MAX_ITER; i++){
+		for(int n = 0; n < nodes; n++){
+			double diagonal_value = (double)getValueAtPosition(sparse_matrix, edges, n * nodes + n);
+			if(diagonal_value == 0) diagonal_value = EPSILON;
+			
+			double sum = 0;
+			for(int j = 0; j < nodes; j++){
+				if(j == n) continue;
+				int value = getValueAtPosition(sparse_matrix, edges, n * nodes + j);
+				if(value == 0) continue;
+				sum += value * solution[j];
+			}
 
-    double lambda_old = 0, lambda_new = 0;
-    int iter = 0;
+			solution[n] = (x[n] - sum) / diagonal_value;
+		}
 
-    while (iter < MAX_ITER) {
-        // Rozwiązuje (A * y) = x
-        solveSparseSystem(matrix, nnz, x, y, n);
+		double err = normalizedVectorDifference(solution, previous_solution, nodes);
+		if(err < TOL) break;
 
-        normalize(y, n);
+		for(int j = 0; j < nodes; j++) previous_solution[j] = solution[j];
+	}
 
-				// aproksymacja wartości własney metodą raylight
-        lambda_new = dotProduct(y, x, n);
+	free(previous_solution);
+	return solution;
+}
 
-        if (fabs(lambda_new - lambda_old) < TOL) break;
+double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
+	srand(time(NULL));
+	double* eigenvector = malloc(nodes * sizeof(double));
+	double* previous_eigenvector = malloc(nodes * sizeof(double));
 
-        lambda_old = lambda_new;
+	// losowy wektor start
+	double mean = 0;
+	for(int i = 0; i < nodes; i++){
+		eigenvector[i] = (double)(rand()%100) - 50;
+		mean += eigenvector[i];
+	}
 
-		// Nowe x do następnej iteracji
-        for (int i = 0; i < n; i++) x[i] = y[i];
+	mean /= nodes;
+	for(int i = 0; i < nodes; i++) eigenvector[i] -= mean;
+	normalizeVector(eigenvector, nodes);
+	// losowy wektor end
+	
+	for(int i = 0; i < MAX_ITER; i++){
+		for(int n = 0; n < nodes; n++) previous_eigenvector[n] = eigenvector[n];
+		double* new_guess = gaussSeidelSolver(sparse_matrix, nodes, edges, previous_eigenvector);
 
-        iter++;
-    }
+		normalizeVector(new_guess, nodes);
+		for(int n = 0; n < nodes; n++) eigenvector[n] = new_guess[n];
+		free(new_guess);
 
-    if (fabs(lambda_new) < 1e-12) {
-        printf("Wartość własna jest zbyt bliska zeru.\n");
-        exit(1);
-    }
+		double err = normalizedVectorDifference(eigenvector, previous_eigenvector, nodes);
+		if(err < TOL) break;
+	}
 
-    *eigenvalue = 1.0 / lambda_new;
-
-    for (int i = 0; i < n; i++) eigenvector[i] = y[i];
-
-    free(y);
-    free(x);
+	free(previous_eigenvector);
+	return eigenvector;
 }
