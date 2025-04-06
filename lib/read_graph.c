@@ -39,34 +39,37 @@ Node* fileToSparseMatrix(FILE* file, int* foreign_nodes, int* foreign_edges){
 	return sparse_matrix;
 }
 
-int findEdge(Node *array, int n, int position) {
-    int left = 0, right = n - 1;
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (array[mid].position == position) return mid;
-        if (array[mid].position < position) left = mid + 1;
-        else right = mid - 1;
+void clusterEigenvector(FILE* output_file, double *eigenvector, int size, int k, double percentage) {
+	// zaminiam podaną tablice wektorową na tablicę struct-ów
+    EigenNode *nodes = (EigenNode *)malloc(size * sizeof(EigenNode));
+    if (!nodes) {
+        fprintf(stderr, "Nie udało się zaalokować pamięci na wektor własny.\n");
+        exit(EXIT_FAILURE);
     }
-    return -1;
-}
+    for (int i = 0; i < size; i++) {
+        nodes[i].index = i;
+        nodes[i].value = eigenvector[i];
+    }
 
-Node *makeSymmetric(Node *array, int n, int matrix_size, int *newSize) {
-  int capacity = n * 2;
-  Node *symmetricArray = (Node *)malloc(capacity * sizeof(Node));
-  if (!symmetricArray) {
-    fprintf(stderr, "Nie udało się zaalokować pamięci na powiększoną macierz symetryczną.\n");
-    exit(EXIT_FAILURE);
-  }
+    qsort(nodes, size, sizeof(EigenNode), compareEigenNodes);
 
-	for(int i = 0; i < capacity; i+=2){
-		symmetricArray[i] = array[i/2];
-		symmetricArray[i+1].value = array[i/2].value;
-		symmetricArray[i+1].position = (array[i/2].position % matrix_size) * matrix_size + array[i/2].position / matrix_size;
-	}
+    int idealSize = size / k;
+    int minSize = (int)(idealSize * (1 - percentage / 100.0));
+    int maxSize = (int)(idealSize * (1 + percentage / 100.0));
 
-	*newSize = capacity;
-	
-	qsort(symmetricArray, capacity, sizeof(Node), comparenodes);
+    int count = 0, clusterCount = 0;
 
-  return symmetricArray;
+    for (int i = 0; i < size; i++) {
+        fprintf(output_file, "%d ", nodes[i].index);
+        count++;
+
+        if (count >= idealSize && clusterCount < k - 1) {
+            fprintf(output_file, "\n");
+            count = 0;
+            clusterCount++;
+        }
+    }
+    fprintf(output_file, "\n");
+
+    free(nodes);
 }

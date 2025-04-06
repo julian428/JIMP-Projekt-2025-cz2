@@ -1,23 +1,5 @@
 #include "graph.h"
 
-void printSparseMatrix(Node* sparse_matrix, int vertesies, int edges){
-	if(vertesies > 10){
-		printf("Matrix too large to print.\nPrinting only edges.\n");
-		for(int i = 0; i < edges; i++){
-			printf("{ row: %d; col: %d; val: %d; pos: %d }\n", sparse_matrix[i].position / vertesies, sparse_matrix[i].position % vertesies, sparse_matrix[i].value, sparse_matrix[i].position);
-		}
-		return;
-	}
-
-	for(int i = 0, n = 0; i < vertesies*vertesies; i++){
-		int val = 0;
-		if(i == sparse_matrix[n].position) val = sparse_matrix[n++].value;
-		if(i % vertesies == 0) printf("\n");
-		printf("%2d ", val);
-	}
-	printf("\n");
-}
-
 Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges){
 	int* degree_vector = (int*)calloc(vertesies, sizeof(int));
 	for(int i = 0; i < edges; i++){
@@ -51,46 +33,34 @@ Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges){
 	return laplacian;
 }
 
-int comparenodes(const void *a, const void *b) {
-    return ((Node*)a)->position - ((Node*)b)->position;
+int findEdge(Node *array, int n, int position) {
+    int left = 0, right = n - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (array[mid].position == position) return mid;
+        if (array[mid].position < position) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
 }
 
-int compareEigenNodes(const void *a, const void *b) {
-    double diff = ((EigenNode *)a)->value - ((EigenNode *)b)->value;
-    return (diff > 0) - (diff < 0); // Returns -1, 0, or 1
-}
+Node *makeSymmetric(Node *array, int n, int matrix_size, int *newSize) {
+  int capacity = n * 2;
+  Node *symmetricArray = (Node *)malloc(capacity * sizeof(Node));
+  if (!symmetricArray) {
+    fprintf(stderr, "Nie udało się zaalokować pamięci na powiększoną macierz symetryczną.\n");
+    exit(EXIT_FAILURE);
+  }
 
-void clusterEigenvector(FILE* output_file, double *eigenvector, int size, int k, double percentage) {
-	// zaminiam podaną tablice wektorową na tablicę struct-ów
-    EigenNode *nodes = (EigenNode *)malloc(size * sizeof(EigenNode));
-    if (!nodes) {
-        fprintf(stderr, "Nie udało się zaalokować pamięci na wektor własny.\n");
-        exit(EXIT_FAILURE);
-    }
-    for (int i = 0; i < size; i++) {
-        nodes[i].index = i;
-        nodes[i].value = eigenvector[i];
-    }
+	for(int i = 0; i < capacity; i+=2){
+		symmetricArray[i] = array[i/2];
+		symmetricArray[i+1].value = array[i/2].value;
+		symmetricArray[i+1].position = (array[i/2].position % matrix_size) * matrix_size + array[i/2].position / matrix_size;
+	}
 
-    qsort(nodes, size, sizeof(EigenNode), compareEigenNodes);
+	*newSize = capacity;
+	
+	qsort(symmetricArray, capacity, sizeof(Node), comparenodes);
 
-    int idealSize = size / k;
-    int minSize = (int)(idealSize * (1 - percentage / 100.0));
-    int maxSize = (int)(idealSize * (1 + percentage / 100.0));
-
-    int count = 0, clusterCount = 0;
-
-    for (int i = 0; i < size; i++) {
-        fprintf(output_file, "%d ", nodes[i].index);
-        count++;
-
-        if (count >= idealSize && clusterCount < k - 1) {
-            fprintf(output_file, "\n");
-            count = 0;
-            clusterCount++;
-        }
-    }
-    fprintf(output_file, "\n");
-
-    free(nodes);
+  return symmetricArray;
 }
