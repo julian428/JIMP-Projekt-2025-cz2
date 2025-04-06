@@ -48,7 +48,7 @@ int main(int argc, char** argv){
   clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
 
 	fclose(file);
-	fclose(cluster_file);
+	fclose(clusters_file);
   free(eigenvector);
 	free(adjc);
 	free(laplacian);
