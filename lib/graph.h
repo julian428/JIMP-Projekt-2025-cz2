@@ -17,6 +17,7 @@ typedef struct {
 } EigenNode;
 
 #include "read_graph.h"
+#include "utils.h"
 
 Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges);
 int findEdge(Node *array, int n, int position);
