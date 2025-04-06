@@ -6,12 +6,14 @@
 #include <stdio.h>
 
 int main(int argc, char** argv){
-	int nodes = 6;
-	int edges = 16;	
+	int nodes = 0;
+	int edges = 0;	
 	char* output_file = "clusters.txt";
 	char* input_file = "jimp2/projekt-4/dane/graf.csrrg";
 	int cluster_count = 2;
 	double percentage = 10.0;
+
+	// start parametrów
 
 	char* new_output_file = getParameter(argc, argv, "-o");
 	char* new_input_file = getParameter(argc, argv, "-i");
@@ -22,33 +24,36 @@ int main(int argc, char** argv){
 	if(new_input_file) input_file = new_input_file;
 	if(new_cluster_count) cluster_count = atoi(new_cluster_count);
 	if(new_percentage) percentage = atof(new_percentage);
+
+	// koniec parametrów
 	
 	int res = createGraphFile(input_file, "output.txt");
 	if(res != 0) return 1;
 
+	// start przygotowania macierzy sąsiedztwa
+
 	FILE* file = fopen("output.txt", "r");
 	Node* adjc = fileToSparseMatrix(file, &nodes, &edges);
-	printSparseMatrix(adjc, nodes, edges);
+	fclose(file);
 
 	int new_edges = 0;
-	adjc = makeSymmetric(adjc, edges, nodes, &new_edges);
+	adjc = makeSymmetric(adjc, nodes, edges, &new_edges);
 	edges = new_edges;
-	printSparseMatrix(adjc, nodes, edges);
 
 	Node* laplacian = sparseMatrixToLaplacian(adjc, nodes, edges);
+	free(adjc);
 	edges += nodes;
+
   qsort(laplacian, edges, sizeof(Node), comparenodes);
-	printSparseMatrix(laplacian, nodes, edges);
+
+	// koniec przygotowywania
 	
 	double* eigenvector = inversePowerIteration(laplacian, nodes, edges);
-	
 	FILE* clusters_file = fopen(output_file, "w");
   clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
 
-	fclose(file);
 	fclose(clusters_file);
   free(eigenvector);
-	free(adjc);
 	free(laplacian);
 	return 0;
 }

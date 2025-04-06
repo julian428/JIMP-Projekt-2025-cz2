@@ -33,34 +33,34 @@ Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges){
 	return laplacian;
 }
 
-int findEdge(Node *array, int n, int position) {
+int findEdge(Node *sparse_matrix, int n, int position) {
     int left = 0, right = n - 1;
     while (left <= right) {
         int mid = left + (right - left) / 2;
-        if (array[mid].position == position) return mid;
-        if (array[mid].position < position) left = mid + 1;
+        if (sparse_matrix[mid].position == position) return mid;
+        if (sparse_matrix[mid].position < position) left = mid + 1;
         else right = mid - 1;
     }
     return -1;
 }
 
-Node *makeSymmetric(Node *array, int n, int matrix_size, int *newSize) {
-  int capacity = n * 2;
-  Node *symmetricArray = (Node *)malloc(capacity * sizeof(Node));
-  if (!symmetricArray) {
+Node *makeSymmetric(Node *sparse_matrix, int nodes, int edges, int *new_size) {
+  int capacity = edges * 2;
+  Node *symmetric_array = (Node *)malloc(capacity * sizeof(Node));
+  if (!symmetric_array) {
     fprintf(stderr, "Nie udało się zaalokować pamięci na powiększoną macierz symetryczną.\n");
     exit(EXIT_FAILURE);
   }
 
 	for(int i = 0; i < capacity; i+=2){
-		symmetricArray[i] = array[i/2];
-		symmetricArray[i+1].value = array[i/2].value;
-		symmetricArray[i+1].position = (array[i/2].position % matrix_size) * matrix_size + array[i/2].position / matrix_size;
+		symmetric_array[i] = sparse_matrix[i/2];
+		symmetric_array[i+1].value = sparse_matrix[i/2].value;
+		symmetric_array[i+1].position = (sparse_matrix[i/2].position % nodes) * nodes + sparse_matrix[i/2].position / nodes;
 	}
 
-	*newSize = capacity;
+	*new_size = capacity;
 	
-	qsort(symmetricArray, capacity, sizeof(Node), comparenodes);
+	qsort(symmetric_array, capacity, sizeof(Node), comparenodes);
 
-  return symmetricArray;
+  return symmetric_array;
 }
