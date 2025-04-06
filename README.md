@@ -86,3 +86,30 @@ Wyjście
 #### Wygląd grafu z podanych przykładów powyżej.
 !["zdjęcie przykładowego grafu"](assets/example_graph.png)
 
+
+## Dokumentacja implementacyjna
+
+1. Najpierw program parsuje podane argumenty i nadpisuje nimi jeżeli zostały podane domyślne parametry.
+```c
+char* new_output_file = getParameter(argc, argv, "-o");
+char* new_input_file = getParameter(argc, argv, "-i");
+char* new_cluster_count = getParameter(argc, argv, "-c");
+char* new_percentage = getParameter(argc, argv, "-p");
+
+if(new_output_file) output_file = new_output_file;
+if(new_input_file) input_file = new_input_file;
+if(new_cluster_count) cluster_count = atoi(new_cluster_count);
+if(new_percentage) percentage = atof(new_percentage);
+```
+
+Funkcja `getParameter` iteruje przez podane argumenty i po znalezieniu napisu podanego jako trzeci arghument zwraca wartość argumentu znajdującego się po nim.
+
+```c
+if(!strcmp(params[i], param_prefix)) return params[i+1];
+```
+
+2. Następnie tworzony jest przetłumaczony plik z macierzą pozycji oraz krawędziami grafu.
+```c
+int res = createGraphFile(input_file, "output.txt");
+if(res != 0) return 1;
+```
