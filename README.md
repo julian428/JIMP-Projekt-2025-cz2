@@ -231,4 +231,17 @@ Wynikiem przykładu jest podział na dwa klastry:
 
 ## Dokumentacja algorytmiczna
 
-Algorytmem używanym do dzielenia grafu jest `Spectral Clustering`. Algorytm ten umożliwia podział na podstawi dowolnej macierzy podobieństwa zawierającej informacje na temat powiązania pomiędzy danymi wierzchołkami. W tym programie macierzą podobieństwa jest macierz sąsiedztwa.
+Algorytmem używanym do dzielenia grafu jest `Spectral Clustering`. Algorytm ten umożliwia podział na podstawie dowolnej macierzy podobieństwa zawierającej informacje na temat powiązania pomiędzy danymi wierzchołkami. W tym programie macierzą podobieństwa jest macierz sąsiedztwa.
+
+1. Macierz Laplace'a
+   Macierz Laplace'a jest dyskretną wersją [operatora Laplace'a](https://pl.wikipedia.org/wiki/Operator_Laplace%E2%80%99a). Mierzy jak funkcja jest zmienna poprzez graf. Licząc wektory własne macierzy Laplace'a dostajemy tak naprawdę funkcje ciągłe które zmieniają się najmniej pomiędzy połączonymi wierzchołkami. Dzięki temu możemy odpowiednio podzielić graf na klastry.
+2. Metoda `Inverse Power Iteration Method`
+   Jeżeli zastosujemy Metodę [Power Iteration](https://en.wikipedia.org/wiki/Power_iteration) to macierzy odwrotnej dostaniemy najmniejszy wektor własny wyłączając wektor zerowy. 
+   Metoda ta działa podobnie jak [Metoda Newtona](https://en.wikipedia.org/wiki/Newton%27s_method) gdzie najpierw zgadujemy poprawną odpowiedź a w następnych iteracjach poprawiamy ją.
+   W naszym przypadku musimy policzyć wyznacznik z macierzy Laplace'a minus macierz lambda:
+   $$
+det(L - \lambda I) = 0
+   $$
+   Aby uzyskać wynik iterujemy po coraz lepszych wersjaach wektora własnego aż powyższe działanie jest wystarczająco dokładne. Używamy do tego metody [Gauss - Siedel](https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method) .
+   
+   
