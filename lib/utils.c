@@ -20,9 +20,9 @@ void printSparseMatrix(Node* sparse_matrix, int vertesies, int edges){
 		int val = 0;
 		if(i == sparse_matrix[n].position) val = sparse_matrix[n++].value;
 		if(i % vertesies == 0) conditionalPrintf("\t\n\t");
-		printf("%2d ", val);
+		conditionalPrintf("%2d ", val);
 	}
-	printf("\n");
+	conditionalPrintf("\n");
 }
 
 int comparenodes(const void *a, const void *b) {
