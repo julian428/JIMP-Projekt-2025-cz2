@@ -4,53 +4,122 @@
 #include "lib/utils.h"
 
 #include <stdio.h>
+#include <time.h>
+
+int LOG = 0;
 
 int main(int argc, char** argv){
-	int nodes = 6;
-	int edges = 16;	
+	int nodes = 0;
+	int edges = 0;	
 	char* output_file = "clusters.txt";
 	char* input_file = "jimp2/projekt-4/dane/graf.csrrg";
 	int cluster_count = 2;
 	double percentage = 10.0;
 
+	// start parametrów
+
 	char* new_output_file = getParameter(argc, argv, "-o");
 	char* new_input_file = getParameter(argc, argv, "-i");
 	char* new_cluster_count = getParameter(argc, argv, "-c");
 	char* new_percentage = getParameter(argc, argv, "-p");
+	char* new_log = getParameter(argc, argv, "-l");
 
 	if(new_output_file) output_file = new_output_file;
 	if(new_input_file) input_file = new_input_file;
 	if(new_cluster_count) cluster_count = atoi(new_cluster_count);
 	if(new_percentage) percentage = atof(new_percentage);
+	if(new_log) LOG = 1;
+
+	if(percentage > 100) percentage = 100;
+	if(percentage < 0) percentage = 0;
+	if(cluster_count < 1) cluster_count = 1;
+
+	clock_t start = clock();
+
+	// koniec parametrów
+	double elapsed = (double)(clock() - start) / CLOCKS_PER_SEC;
 	
+	conditionalPrintf("1. Translacja pliku %s\t%lfs\n", input_file, elapsed);
 	int res = createGraphFile(input_file, "output.txt");
-	if(res != 0) return 1;
+	if(res != 0){
+		conditionalPrintf("\tNie udało się przetłumaczyć pliku \"%s\".\n", input_file);
+		return 1;
+	}
 
+	// start przygotowania macierzy sąsiedztwa
+	elapsed = (double)(clock() - start) / CLOCKS_PER_SEC;
+
+	conditionalPrintf("2. Zapisywanie grafu do macierzy rzadkiej.\t%lfs\n", elapsed);
 	FILE* file = fopen("output.txt", "r");
+	if(!file){
+		conditionalPrintf("\tNie udało się otworzyć pliku \"output.txt\"\n");
+		return 1;
+	}
+
 	Node* adjc = fileToSparseMatrix(file, &nodes, &edges);
+	if(!adjc) {
+		conditionalPrintf("\tNie udało się stworzyć macierzy rzadkiej sąsiedztwa.\n");
+		fclose(file);
+		return 1;
+	}
+	if(cluster_count > nodes) cluster_count = nodes;
+	fclose(file);
 	printSparseMatrix(adjc, nodes, edges);
 
+	elapsed = (double)(clock() - start) / CLOCKS_PER_SEC;
+	conditionalPrintf("3. Symetralizacja macierzy rzadkiej.\t%lfs\n", elapsed);
 	int new_edges = 0;
-	adjc = makeSymmetric(adjc, edges, nodes, &new_edges);
+	adjc = makeSymmetric(adjc, nodes, edges, &new_edges);
 	edges = new_edges;
+	if(!adjc){
+		conditionalPrintf("\tNie udało się zsymetralizować macierzy rzadkiej.\n");
+		return 1;
+	}
 	printSparseMatrix(adjc, nodes, edges);
 
+	elapsed = (double)(clock() - start) / CLOCKS_PER_SEC;
+	conditionalPrintf("4. Tworzenie macierzy Laplace'a.\t%lfs\n", elapsed);
 	Node* laplacian = sparseMatrixToLaplacian(adjc, nodes, edges);
-  qsort(laplacian, edges, sizeof(Node), comparenodes);
+	if(!laplacian){
+		conditionalPrintf("\tNie udało się stworzyć macierzy Laplace'a.\n");
+		free(adjc);
+		return 1;
+	}
+	free(adjc);
+	edges += nodes;
 	printSparseMatrix(laplacian, nodes, edges);
-	
-	double *eigenvector = malloc(nodes * sizeof(double));
-  double eigenvalue;
 
-  inversePowerMethod(laplacian, edges, eigenvector, &eigenvalue, nodes);
+  qsort(laplacian, edges, sizeof(Node), comparenodes);
 
+	// koniec przygotowywania
+	elapsed = (double)(clock() - start) / CLOCKS_PER_SEC;
+
+	conditionalPrintf("5. Znalezienie wektora własnego.\t%lfs\n", elapsed);
+	double* eigenvector = inversePowerIteration(laplacian, nodes, edges);
+	if(!eigenvector){
+		conditionalPrintf("\tNie udało się znaleźć wektora własnego.\n");
+		return 1;
+	}
+
+	conditionalPrintf("\tWektor własny Fiedlera: [ ");
+	for(int i = 0; i < nodes; i++){
+		conditionalPrintf("%lf ", eigenvector[i]);
+	}
+	conditionalPrintf("]\n");
+
+	elapsed = (double)(clock() - start) / CLOCKS_PER_SEC;
+	conditionalPrintf("6. Dzielenie grafu na podstawie wektora własnego.\t%lfs\n", elapsed);
 	FILE* clusters_file = fopen(output_file, "w");
+	if(!clusters_file){
+		conditionalPrintf("\tNie udało się otworzyć pliku \"%s\" do zapisania klastrów.\n", output_file);
+		free(eigenvector);
+		return 1;
+	}
+
   clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
 
-	fclose(file);
 	fclose(clusters_file);
   free(eigenvector);
-	free(adjc);
 	free(laplacian);
 	return 0;
 }
