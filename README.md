@@ -144,7 +144,11 @@ Zawartosc pliku `output.txt`:
 
 Jest konwertowana nastepujaco:
 1. najpierw liczy ilosc wierzcholkow, czyli wartosci **1** w macierzy pozycji.
-2. 
+2. nastepnie zamienia polaczenia krawedzi na rzadka macierz sasiedztwa.
+   
+```c
+sparse_matrix[i].position = from * nodes + to;
+```
 
 Tablica `adjc` składa się z wyłącznie nie zerowych elementów `Node` macierzy sąsiedztwa.
 
@@ -182,7 +186,7 @@ $$
 A_{ij} \implies A_{ji}
 $$
 
-*macierz `adjc` po symetralizacji*
+*macierz `adjc` po symetralizacji*:
 
 ```
  0  1  1  0  0  0
@@ -226,16 +230,20 @@ $n - \text{liczba wierzchołków}$
 6. Następnie ze stworzonej macierzy Laplace'a liczymy jej najmniejszy wektor własny metodą **Inverse Power Method**
    
 ```c
-double *eigenvector = malloc(nodes * sizeof(double));
-double eigenvalue;
-
-inversePowerMethod(laplacian, edges, eigenvector, &eigenvalue, nodes);
+double* eigenvector = inversePowerIteration(laplacian, nodes, edges);
 ```
 
-Najmniejszym wektorem przykładowej macierzy Laplace'a jest
+Najmniejszym wektorem nie zerowym *( [Fiedlera](https://en.wikipedia.org/wiki/Algebraic_connectivity) )* przykładowej macierzy Laplace'a jest
 $$
 \begin{pmatrix} -2 \\ -1 \\ -1 \\ 1 \\ 1 \\ 2 \end{pmatrix}
 $$
+Jednak program nie zwraca wektora o tej samej wartosci. Jest to poniewaz wektor policzony numerycznie jest przyblizany oraz znormalizowany ale jest to na sam koniec ten sam wektor.
+Program zwraca ten wektor:
+$$
+\begin{pmatrix} -0.58 \\ -0.29 \\ -0.29 \\ 0.29 \\ 0.29 \\ 0.57 \end{pmatrix}
+$$
+Ale mozna latwo zauwazyc ze jest to poprostu ten sam wektor przeskalowany przez mniej wiecej jedna czwrata.
+
 7. Ostatnim krokiem programu jest podzielenie grafu na podstawie policzonego wektora własnego  i zapisanie klastrów do pliku. Do każdego wierzchołka przypisana jest odpowiadająca wartość wektora. Czyli 1 wartośc wektora jest przypisywana do pierwszego wierzchołka.
    
 ```c
