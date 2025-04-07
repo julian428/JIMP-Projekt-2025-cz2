@@ -51,22 +51,32 @@ double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 	}
 
 	for(int i = 0; i < MAX_ITER; i++){
-		for(int n = 0; n < nodes; n++){
-			double diagonal_value = (double)getValueAtPosition(sparse_matrix, edges, n * nodes + n);
+		double diagonal_value = 1;
+		double sum = 0;
+		int current_row = 0;
+		for(int j = 0; j < edges; j++){
+			double value = sparse_matrix[j].value;
+			int position = sparse_matrix[j].position;
+			int row = position / nodes;
+			int column = position % nodes;
+
 			if(diagonal_value == 0){
 				diagonal_value = EPSILON;
-				conditionalPrintf("\tNapotkano wartość diagonalną w wierszu %d na pozycji absolutnej %d.\n", n, n * nodes + n);
-			};
-			
-			double sum = 0;
-			for(int j = 0; j < nodes; j++){
-				if(j == n) continue;
-				int value = getValueAtPosition(sparse_matrix, edges, n * nodes + j);
-				if(value == 0) continue;
-				sum += value * solution[j];
+				conditionalPrintf("\tNapotkano wartość diagonalną w wierszu %d na pozycji absolutnej %d.\n", row, position);
 			}
 
-			solution[n] = (x[n] - sum) / diagonal_value;
+			if(current_row < row){
+				solution[current_row] = (x[current_row] - sum) / diagonal_value;
+				sum = 0;
+				current_row++;
+			}
+
+			if(row == column){
+				diagonal_value = value;
+				continue;
+			}
+
+			sum += value * solution[column];
 		}
 
 		double err = normalizedVectorDifference(solution, previous_solution, nodes);
