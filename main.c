@@ -29,6 +29,10 @@ int main(int argc, char** argv){
 	if(new_percentage) percentage = atof(new_percentage);
 	if(new_log) LOG = 1;
 
+	if(percentage > 100) percentage = 100;
+	if(percentage < 0) percentage = 0;
+	if(cluster_count < 1) cluster_count = 1;
+
 	// koniec parametrów
 	
 	conditionalPrintf("1. Translacja pliku %s\n", input_file);
@@ -53,6 +57,7 @@ int main(int argc, char** argv){
 		fclose(file);
 		return 1;
 	}
+	if(cluster_count > nodes) cluster_count = nodes;
 	fclose(file);
 	printSparseMatrix(adjc, nodes, edges);
 
