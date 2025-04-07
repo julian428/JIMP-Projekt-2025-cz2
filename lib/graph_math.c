@@ -1,14 +1,5 @@
 #include "graph_math.h"
 
-int getValueAtPosition(Node* sparse_matrix, int edges, int position){
-	for(int i = 0; i < edges; i++){
-		if(sparse_matrix[i].position != position) continue;
-		return sparse_matrix[i].value;
-	}
-
-	return 0;
-}
-
 double normalizedVectorDifference(double* a, double* b, int nodes){
 	double sum = 0;
 	for(int i = 0; i < nodes; i++){
