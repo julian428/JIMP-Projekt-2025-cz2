@@ -71,7 +71,7 @@ double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 
 		double err = normalizedVectorDifference(solution, previous_solution, nodes);
 		if(err < TOL){
-			conditionalPrintf("\tZakończo rozwiązywanie równania macierzowego w %d iteracjach.\n", i);
+			//conditionalPrintf("\tZakończo rozwiązywanie równania macierzowego w %d iteracjach.\n", i);
 			break;
 		}
 
