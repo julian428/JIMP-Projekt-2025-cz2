@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 
+int LOG = 0;
+
 int main(int argc, char** argv){
 	int nodes = 0;
 	int edges = 0;	
@@ -19,41 +21,87 @@ int main(int argc, char** argv){
 	char* new_input_file = getParameter(argc, argv, "-i");
 	char* new_cluster_count = getParameter(argc, argv, "-c");
 	char* new_percentage = getParameter(argc, argv, "-p");
+	char* new_log = getParameter(argc, argv, "-l");
 
 	if(new_output_file) output_file = new_output_file;
 	if(new_input_file) input_file = new_input_file;
 	if(new_cluster_count) cluster_count = atoi(new_cluster_count);
 	if(new_percentage) percentage = atof(new_percentage);
+	if(new_log) LOG = 1;
 
 	// koniec parametrów
 	
+	conditionalPrintf("1. Translacja pliku %s\n", input_file);
 	int res = createGraphFile(input_file, "output.txt");
-	if(res != 0) return 1;
+	if(res != 0){
+		conditionalPrintf("\tNie udało się przetłumaczyć pliku \"%s\".\n", input_file);
+		return 1;
+	}
 
 	// start przygotowania macierzy sąsiedztwa
 
+	conditionalPrintf("2. Zapisywanie grafu do macierzy rzadkiej.\n");
 	FILE* file = fopen("output.txt", "r");
-	Node* adjc = fileToSparseMatrix(file, &nodes, &edges);
-	fclose(file);
+	if(!file){
+		conditionalPrintf("\tNie udało się otworzyć pliku \"output.txt\"\n");
+		return 1;
+	}
 
+	Node* adjc = fileToSparseMatrix(file, &nodes, &edges);
+	if(!adjc) {
+		conditionalPrintf("\tNie udało się stworzyć macierzy rzadkiej sąsiedztwa.\n");
+		fclose(file);
+		return 1;
+	}
+	fclose(file);
+	printSparseMatrix(adjc, nodes, edges);
+
+	conditionalPrintf("3. Symetralizacja macierzy rzadkiej.\n");
 	int new_edges = 0;
 	adjc = makeSymmetric(adjc, nodes, edges, &new_edges);
 	edges = new_edges;
+	if(!adjc){
+		conditionalPrintf("\tNie udało się zsymetralizować macierzy rzadkiej.\n");
+		return 1;
+	}
+	printSparseMatrix(adjc, nodes, edges);
 
+	conditionalPrintf("4. Tworzenie macierzy Laplace'a.\n");
 	Node* laplacian = sparseMatrixToLaplacian(adjc, nodes, edges);
+	if(!laplacian){
+		conditionalPrintf("\tNie udało się stworzyć macierzy Laplace'a.\n");
+		free(adjc);
+		return 1;
+	}
 	free(adjc);
 	edges += nodes;
+	printSparseMatrix(laplacian, nodes, edges);
 
   qsort(laplacian, edges, sizeof(Node), comparenodes);
 
 	// koniec przygotowywania
 	
+	conditionalPrintf("5. Znalezienie wektora własnego.\n");
 	double* eigenvector = inversePowerIteration(laplacian, nodes, edges);
-	for(int i = 0; i < nodes; i++){
-		printf("%lf ", eigenvector[i]);
+	if(!eigenvector){
+		conditionalPrintf("\tNie udało się znaleźć wektora własnego.\n");
+		return 1;
 	}
-	printf("\n");
+
+	conditionalPrintf("\tWektor własny Fiedlera: [ ");
+	for(int i = 0; i < nodes; i++){
+		conditionalPrintf("%lf ", eigenvector[i]);
+	}
+	conditionalPrintf("]\n");
+
+	conditionalPrintf("6. Dzielenie grafu na podstawie wektora własnego.\n");
 	FILE* clusters_file = fopen(output_file, "w");
+	if(!clusters_file){
+		conditionalPrintf("\tNie udało się otworzyć pliku \"%s\" do zapisania klastrów.\n", output_file);
+		free(eigenvector);
+		return 1;
+	}
+
   clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
 
 	fclose(clusters_file);

@@ -38,12 +38,25 @@ void substractMean(double* vector, int nodes) {
 
 double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 	double *solution = calloc(nodes, sizeof(double));
+	if(!solution){
+		conditionalPrintf("\tNie udało się zaalokować pamięci na wektor wynikowy. graph_math.c:gaussSeidelSolver\n");
+		return NULL;
+	}
+
 	double *previous_solution = calloc(nodes, sizeof(double));
+	if(!previous_solution){
+		conditionalPrintf("\tNie udało się zaalokować pamięci dla wektora pomocniczego. graph_math.c:gaussSeidelSolver\n");
+		free(solution);
+		return NULL;
+	}
 
 	for(int i = 0; i < MAX_ITER; i++){
 		for(int n = 0; n < nodes; n++){
 			double diagonal_value = (double)getValueAtPosition(sparse_matrix, edges, n * nodes + n);
-			if(diagonal_value == 0) diagonal_value = EPSILON;
+			if(diagonal_value == 0){
+				diagonal_value = EPSILON;
+				conditionalPrintf("\tNapotkano wartość diagonalną w wierszu %d na pozycji absolutnej %d.\n", n, n * nodes + n);
+			};
 			
 			double sum = 0;
 			for(int j = 0; j < nodes; j++){
@@ -57,7 +70,10 @@ double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 		}
 
 		double err = normalizedVectorDifference(solution, previous_solution, nodes);
-		if(err < TOL) break;
+		if(err < TOL){
+			conditionalPrintf("\tZakończo rozwiązywanie równania macierzowego w %d iteracjach.\n", i);
+			break;
+		}
 
 		for(int j = 0; j < nodes; j++) previous_solution[j] = solution[j];
 	}
@@ -69,7 +85,15 @@ double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
 	srand(time(NULL));
 	double* eigenvector = malloc(nodes * sizeof(double));
+	if(!eigenvector){
+		conditionalPrintf("\tNie udało się zaalokować pamięci na wektor własny. graph_math.c:inversePowerIteration\n");
+		return NULL;
+	}
+
 	double* previous_eigenvector = malloc(nodes * sizeof(double));
+	if(!previous_eigenvector){
+		conditionalPrintf("Nie udało się zaalokować pamięci na pomocniczy wektor własny. graph_math.c:inversePowerIteration");
+	}
 
 	// losowy wektor start
 	double mean = 0;
@@ -93,7 +117,10 @@ double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
 		free(new_guess);
 
 		double err = normalizedVectorDifference(eigenvector, previous_eigenvector, nodes);
-		if(err < TOL) break;
+		if(err < TOL){
+			conditionalPrintf("\tZnaleziono wektor Fiedlera w %d iteracjach.\n", i);
+			break;
+		}
 	}
 
 	free(previous_eigenvector);

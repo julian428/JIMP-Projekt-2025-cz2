@@ -43,8 +43,8 @@ void clusterEigenvector(FILE* output_file, double *eigenvector, int size, int k,
 	// zaminiam podaną tablice wektorową na tablicę struct-ów
     EigenNode *nodes = (EigenNode *)malloc(size * sizeof(EigenNode));
     if (!nodes) {
-        fprintf(stderr, "Nie udało się zaalokować pamięci na wektor własny.\n");
-        exit(EXIT_FAILURE);
+      conditionalPrintf("\tNie udało się zaalokować pamięci na wektor własny.\n");
+			return;
     }
     for (int i = 0; i < size; i++) {
         nodes[i].index = i;
