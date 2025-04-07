@@ -40,17 +40,18 @@ make
 
 ### Szczegóły wywoływania programu.
 
-Program może przyjąć do 4 parametrów.
+Program może przyjąć do 5 parametrów.
 
 1. Plik wejściowy `-i` ( czyli plik w formacie csrrg )
 2. Plik wyjściowy `-o` ( czyli plik w którym zapisane będą klastry )
 3. Ilość klastrów `-c` ( czyli na ile klastrów ma być podzielony graf )
 4. Procent marginesu `-p` ( czyli procent maksymalnej różnicy pomiędzy rozmiarem klastrów )
+5. `-l` Czy wyswietlac informacje szczegolowe podczas dzialania programu.
 
 #### Na przykład
 
 ```bash
-./bin/divide_graph -i graf.csrrg -o regiony.txt -c 4 -p 20
+./bin/divide_graph -i graf.csrrg -o regiony.txt -c 4 -p 20 -l 1
 ```
 
 Parametry mogą być ustawione w dowolnej kolejności. Nie koniecznie tak jak w powyższym przykładzie.
@@ -89,7 +90,7 @@ Wyjście
 
 ## Dokumentacja funkcjonalna
 
-1. Najpierw program parsuje podane argumenty i nadpisuje nimi jeżeli zostały podane domyślne parametry.
+1. Najpierw program parsuje podane argumenty i nadpisuje nimi, jeżeli zostały podane domyślne parametry.
    
 ```c
 char* new_output_file = getParameter(argc, argv, "-o");
@@ -103,7 +104,7 @@ if(new_cluster_count) cluster_count = atoi(new_cluster_count);
 if(new_percentage) percentage = atof(new_percentage);
 ```
 
-Funkcja `getParameter` iteruje przez podane argumenty i po znalezieniu napisu podanego jako trzeci arghument zwraca wartość argumentu znajdującego się po nim.
+Funkcja `getParameter` iteruje przez podane argumenty i po znalezieniu napisu podanego jako trzeci argument zwraca wartość argumentu znajdującego się po nim.
 
 ```c
 if(!strcmp(params[i], param_prefix)) return params[i+1];
@@ -116,12 +117,34 @@ int res = createGraphFile(input_file, "output.txt");
 if(res != 0) return 1;
 ```
 
+Plik jest tworzony przez program drugiej grupy.
+```c
+char buffer[512];
+sprintf(buffer, "./jimp2/projekt-4/bin/graphdecoder %s > %s", input_file, output_file);
+return system(buffer);
+
+```
+
 3. Plik `output.txt` jest używany do stworzenia macierzy sąsiedztwa w postaci rzadkiej macierzy.
    
 ```c
 FILE* file = fopen("output.txt", "r");
 Node* adjc = fileToSparseMatrix(file, &nodes, &edges);
 ```
+
+Zawartosc pliku `output.txt`:
+```output.txt
+ [0. 0. 1. ...]
+ ...
+ 0 - 2
+ 0 - 4
+ 1 - 5
+ ...
+```
+
+Jest konwertowana nastepujaco:
+1. najpierw liczy ilosc wierzcholkow, czyli wartosci **1** w macierzy pozycji.
+2. 
 
 Tablica `adjc` składa się z wyłącznie nie zerowych elementów `Node` macierzy sąsiedztwa.
 
