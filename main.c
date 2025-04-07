@@ -49,6 +49,10 @@ int main(int argc, char** argv){
 	// koniec przygotowywania
 	
 	double* eigenvector = inversePowerIteration(laplacian, nodes, edges);
+	for(int i = 0; i < nodes; i++){
+		printf("%lf ", eigenvector[i]);
+	}
+	printf("\n");
 	FILE* clusters_file = fopen(output_file, "w");
   clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
 

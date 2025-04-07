@@ -28,6 +28,14 @@ void normalizeVector(double* vector, int nodes){
 	for(int i = 0; i < nodes; i++) vector[i] /= norm;
 }
 
+
+void substractMean(double* vector, int nodes) {
+    double sum = 0.0;
+    for (int i = 0; i < nodes; i++) sum += vector[i];
+    double mean = sum / nodes;
+    for (int i = 0; i < nodes; i++) vector[i] -= mean;
+}
+
 double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 	double *solution = calloc(nodes, sizeof(double));
 	double *previous_solution = calloc(nodes, sizeof(double));
@@ -79,6 +87,7 @@ double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
 		for(int n = 0; n < nodes; n++) previous_eigenvector[n] = eigenvector[n];
 		double* new_guess = gaussSeidelSolver(sparse_matrix, nodes, edges, previous_eigenvector);
 
+		substractMean(new_guess, nodes);
 		normalizeVector(new_guess, nodes);
 		for(int n = 0; n < nodes; n++) eigenvector[n] = new_guess[n];
 		free(new_guess);
