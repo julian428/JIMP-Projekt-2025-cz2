@@ -64,6 +64,7 @@ int main(int argc, char** argv){
 	}
 	if(cluster_count > nodes) cluster_count = nodes;
 	fclose(file);
+  qsort(adjc, edges, sizeof(Node), comparenodes);
 	printSparseMatrix(adjc, nodes, edges);
 
 	elapsed = (double)(clock() - start) / CLOCKS_PER_SEC;
@@ -101,11 +102,11 @@ int main(int argc, char** argv){
 		return 1;
 	}
 
-	conditionalPrintf("\tWektor własny Fiedlera: [ ");
+	/*conditionalPrintf("\tWektor własny Fiedlera: [ ");
 	for(int i = 0; i < nodes; i++){
 		conditionalPrintf("%lf ", eigenvector[i]);
 	}
-	conditionalPrintf("]\n");
+	conditionalPrintf("]\n");*/
 
 	elapsed = (double)(clock() - start) / CLOCKS_PER_SEC;
 	conditionalPrintf("6. Dzielenie grafu na podstawie wektora własnego.\t%lfs\n", elapsed);
