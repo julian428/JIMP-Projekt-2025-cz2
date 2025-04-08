@@ -42,7 +42,7 @@ void createDotFile(char* connectionsfile_name, char* clusterfile_name, char* dot
 
     do {
         if (ch == ' ') {
-            fprintf(dotfile, ";\n");
+            fprintf(dotfile, "; ");
         } else if (ch != '\n' && ch != EOF) {
             fprintf(dotfile, "%c", ch);
         }

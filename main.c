@@ -108,7 +108,7 @@ int main(int argc, char** argv){
 	fclose(clusters_file);
 
 	if(generate_dot){
-		createDotFile("output.txt", output_file, "cluster.dot", cluster_count);
+		createDotFile("output.txt", output_file, dot_file, cluster_count);
 	}
 
   free(eigenvector);
