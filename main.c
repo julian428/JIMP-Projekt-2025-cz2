@@ -13,6 +13,8 @@ int main(int argc, char** argv){
 	int edges = 0;	
 	char* output_file = "clusters.txt";
 	char* input_file = "jimp2/projekt-4/dane/graf.csrrg";
+	char* dot_file = "clusters.dot";
+	int generate_dot = 0;
 	int cluster_count = 2;
 	double percentage = 10.0;
 
@@ -23,12 +25,17 @@ int main(int argc, char** argv){
 	char* new_cluster_count = getParameter(argc, argv, "-c");
 	char* new_percentage = getParameter(argc, argv, "-p");
 	char* new_log = getParameter(argc, argv, "-l");
+	char* new_dot_file = getParameter(argc, argv, "-g");
 
 	if(new_output_file) output_file = new_output_file;
 	if(new_input_file) input_file = new_input_file;
 	if(new_cluster_count) cluster_count = atoi(new_cluster_count);
 	if(new_percentage) percentage = atof(new_percentage);
 	if(new_log) LOG = 1;
+	if(new_dot_file){
+		generate_dot = 1;
+		dot_file = new_dot_file;
+	}
 
 	if(percentage > 100) percentage = 100;
 	if(percentage < 0) percentage = 0;
@@ -100,7 +107,9 @@ int main(int argc, char** argv){
   clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
 	fclose(clusters_file);
 
-	createDotFile("output.txt", output_file, "cluster.dot", cluster_count);
+	if(generate_dot){
+		createDotFile("output.txt", output_file, "cluster.dot", cluster_count);
+	}
 
   free(eigenvector);
 	free(laplacian);

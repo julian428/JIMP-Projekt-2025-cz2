@@ -29,18 +29,20 @@ void createDotFile(char* connectionsfile_name, char* clusterfile_name, char* dot
 		return;
 	}
 
+	char* colors[] = {"pink", "green", "blue", "yellow"};
+
 	fprintf(dotfile, "digraph Regiony {\n");
 
 	char ch;
 	for (int row = 0; row < clusters; row++) {
-    fprintf(dotfile, "\tsubgraph cluster_%d {\n\t\tlabel = \"Region %d\";\n\t\tstyle = filled;\n\t\tcolor = lightblue;\n\t\tnode [style=filled, color=white];\n\t\t", row, row+1);
+    fprintf(dotfile, "\tsubgraph cluster_%d {\n\t\tlabel = \"Region %d\";\n\t\tstyle = filled;\n\t\tcolor = light%s;\n\t\tnode [style=filled, color=white];\n\t\t", row, row+1, colors[row%4]);
 
     ch = fgetc(cluster_file);
     if (ch == EOF) break;
 
     do {
         if (ch == ' ') {
-            fprintf(dotfile, "; ");
+            fprintf(dotfile, ";\n");
         } else if (ch != '\n' && ch != EOF) {
             fprintf(dotfile, "%c", ch);
         }
@@ -62,7 +64,7 @@ void createDotFile(char* connectionsfile_name, char* clusterfile_name, char* dot
 
 	int from, to;
 	while(fscanf(connectionsfile, "%d - %d\n", &from, &to) == 2){
-		fprintf(dotfile, "\t%d -> %d;\n", from, to);
+		fprintf(dotfile, "\t%d -> %d [color=%s];\n", from, to, colors[from % 4]);
 	}
 
 	fprintf(dotfile, "}\n");
