@@ -40,18 +40,24 @@ make
 
 ### Szczegóły wywoływania programu.
 
-Program może przyjąć do 5 parametrów.
+Program może przyjąć do 6 parametrów.
 
 1. Plik wejściowy `-i` ( czyli plik w formacie csrrg )
 2. Plik wyjściowy `-o` ( czyli plik w którym zapisane będą klastry )
 3. Ilość klastrów `-c` ( czyli na ile klastrów ma być podzielony graf )
 4. Procent marginesu `-p` ( czyli procent maksymalnej różnicy pomiędzy rozmiarem klastrów )
 5. `-l` Czy wyswietlac informacje szczegolowe podczas dzialania programu.
+6. `-g` nazwa pliku do którego ma być zapisany plik .dot. Jeżeli takowy nie zostanie podany, plik .dot nie zostanie wygenerowany.
+   
+   *Plik dot może być użyty do wygenerowania obrazu grafu na przykład za pomocą programu [graphviz](https://graphviz.org/)*
+   
+   *Przykładowy obraz grafu.*
+   ![przyklad_graf_graphviz.png](assets/przyklad_graf_graphviz.png)
 
 #### Na przykład
 
 ```bash
-./bin/divide_graph -i graf.csrrg -o regiony.txt -c 4 -p 20 -l 1
+./bin/divide_graph -i graf.csrrg -o regiony.txt -c 4 -p 20 -l 1 -g graph.dot
 ```
 
 Parametry mogą być ustawione w dowolnej kolejności. Nie koniecznie tak jak w powyższym przykładzie.
