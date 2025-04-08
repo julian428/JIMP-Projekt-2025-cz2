@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wextra -g
+CFLAGS = -Wextra -pg -g
 LDFLAGS = -lm
 
 SRC = main.c lib/graph.c lib/graph_math.c lib/read_graph.c lib/utils.c
