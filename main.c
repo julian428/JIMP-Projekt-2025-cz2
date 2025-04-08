@@ -100,7 +100,7 @@ int main(int argc, char** argv){
   clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
 	fclose(clusters_file);
 
-	createDotFile(output_file, "cluster.dot", cluster_count);
+	createDotFile("output.txt", output_file, "cluster.dot", cluster_count);
 
   free(eigenvector);
 	free(laplacian);
