@@ -118,7 +118,7 @@ double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
 		free(new_guess);
 
 		double err = normalizedVectorDifference(eigenvector, previous_eigenvector, nodes);
-		if(err < TOL){
+		if(err < 2.0/nodes){
 			conditionalPrintf("\tZnaleziono wektor Fiedlera w %d iteracjach.\n", i);
 			break;
 		}
