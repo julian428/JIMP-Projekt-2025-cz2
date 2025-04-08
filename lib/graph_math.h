@@ -8,7 +8,7 @@
 
 #include "graph.h"
 
-#define TOL 1e-2
+#define TOL 0.1
 #define MAX_ITER 1000
 #define EPSILON 0.1
 
