@@ -2,3 +2,6 @@ bin
 /*.txt
 .obsidian
 calgrind.out.*
+*.png
+*.dot
+*.csrrg

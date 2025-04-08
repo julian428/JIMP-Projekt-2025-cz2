@@ -43,5 +43,3 @@ void conditionalPrintf(const char *format, ...) {
   va_end(args);
 
 }
-
-
