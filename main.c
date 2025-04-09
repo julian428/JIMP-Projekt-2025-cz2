@@ -64,6 +64,8 @@ int main(int argc, char** argv){
 		return 1;
 	}
 	if(cluster_count > nodes) cluster_count = nodes;
+	conditionalPrintf("wierzchołki: %d\nkrawędzie: %d\n", nodes, edges);
+
 	fclose(file);
   qsort(adjc, edges, sizeof(Node), comparenodes);
 	printSparseMatrix(adjc, nodes, edges);
