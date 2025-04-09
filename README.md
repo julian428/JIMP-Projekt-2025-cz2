@@ -210,18 +210,22 @@ Node* laplacian = sparseMatrixToLaplacian(adjc, nodes, edges);
 ```
 
 Macierz Laplace'a:
+
 $$
 L=D-A
 $$
+
 Gdzie:
 $L - \text{Macierz Laplace'a}$
 $D - \text{macierz stopniowa macierzy sąsiedztwa}$
 $A-\text{macierz sąsiedztwa}$
 
 Macierz stopniowa jest macierzą diagonalną gdzie każda wartość diagonalna jest sumą połączeń danego wierzchołka.
+
 $$
 D_{ii}=\sum_{j=0}^{i-1} A_{ij} +\sum_{j=i+1}^{n}A_{ij}
 $$
+
 $n - \text{liczba wierzchołków}$
 *Przykładowa macierz Laplace'a na wcześniejszym przykładzie:*
 ```
@@ -240,14 +244,18 @@ double* eigenvector = inversePowerIteration(laplacian, nodes, edges);
 ```
 
 Najmniejszym wektorem nie zerowym *( [Fiedlera](https://en.wikipedia.org/wiki/Algebraic_connectivity) )* przykładowej macierzy Laplace'a jest
+
 $$
 \begin{pmatrix} -2 \\ -1 \\ -1 \\ 1 \\ 1 \\ 2 \end{pmatrix}
 $$
+
 Jednak program nie zwraca wektora o tej samej wartosci. Jest to poniewaz wektor policzony numerycznie jest przyblizany oraz znormalizowany ale jest to na sam koniec ten sam wektor.
 Program zwraca ten wektor:
+
 $$
 \begin{pmatrix} -0.58 \\ -0.29 \\ -0.29 \\ 0.29 \\ 0.29 \\ 0.57 \end{pmatrix}
 $$
+
 Ale mozna latwo zauwazyc ze jest to poprostu ten sam wektor przeskalowany przez mniej wiecej jedna czwrata.
 
 7. Ostatnim krokiem programu jest podzielenie grafu na podstawie policzonego wektora własnego  i zapisanie klastrów do pliku. Do każdego wierzchołka przypisana jest odpowiadająca wartość wektora. Czyli 1 wartośc wektora jest przypisywana do pierwszego wierzchołka.
@@ -276,9 +284,11 @@ Algorytmem używanym do dzielenia grafu jest `Spectral Clustering`. Algorytm ten
    Jeżeli zastosujemy Metodę [Power Iteration](https://en.wikipedia.org/wiki/Power_iteration) to macierzy odwrotnej dostaniemy najmniejszy wektor własny wyłączając wektor zerowy. 
    Metoda ta działa podobnie jak [Metoda Newtona](https://en.wikipedia.org/wiki/Newton%27s_method) gdzie najpierw zgadujemy poprawną odpowiedź a w następnych iteracjach poprawiamy ją.
    W naszym przypadku musimy policzyć wyznacznik z macierzy Laplace'a minus macierz lambda:
+   
    $$
 det(L - \lambda I) = 0
    $$
+   
    Aby uzyskać wynik iterujemy po coraz lepszych wersjaach wektora własnego aż powyższe działanie jest wystarczająco dokładne. Używamy do tego metody [Gauss - Siedel](https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method) .
    
    
