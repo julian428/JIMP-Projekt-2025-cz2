@@ -47,35 +47,43 @@ Node* fileToSparseMatrix(FILE* file, int* foreign_nodes, int* foreign_edges){
 
 void clusterEigenvector(FILE* output_file, double *eigenvector, int size, int k, double percentage) {
 	// zaminiam podaną tablice wektorową na tablicę struct-ów
-    EigenNode *nodes = (EigenNode *)malloc(size * sizeof(EigenNode));
-    if (!nodes) {
-      conditionalPrintf("\tNie udało się zaalokować pamięci na wektor własny.\n");
-			return;
+  EigenNode *nodes = (EigenNode *)malloc(size * sizeof(EigenNode));
+  if (!nodes) {
+    conditionalPrintf("\tNie udało się zaalokować pamięci na wektor własny.\n");
+		return;
+  }
+  for (int i = 0; i < size; i++) {
+    nodes[i].index = i;
+    nodes[i].value = eigenvector[i];
+  }
+
+  qsort(nodes, size, sizeof(EigenNode), compareEigenNodes);
+
+  int idealSize = size / k;
+	int freeNodes = size % k;
+
+  int count = 0, clusterCount = 0;
+
+  for (int i = 0; i < size; i++) {
+    fprintf(output_file, "%d ", nodes[i].index);
+    count++;
+
+    if (count >= idealSize && clusterCount < k - 1) {
+			if(freeNodes > 0 && i < size - 2){
+				double distanceLeft = fabs(nodes[i+1].value-nodes[i].value);
+				double distanceRight = fabs(nodes[i+2].value-nodes[i+1].value);
+
+				if(distanceLeft < distanceRight){
+					fprintf(output_file, "%d ", nodes[++i].index);
+					freeNodes--;
+				}
+			}
+      fprintf(output_file, "\n");
+      count = 0;
+      clusterCount++;
     }
-    for (int i = 0; i < size; i++) {
-        nodes[i].index = i;
-        nodes[i].value = eigenvector[i];
-    }
+  }
+  fprintf(output_file, "\n");
 
-    qsort(nodes, size, sizeof(EigenNode), compareEigenNodes);
-
-    int idealSize = size / k;
-    int minSize = (int)(idealSize * (1 - percentage / 100.0));
-    int maxSize = (int)(idealSize * (1 + percentage / 100.0));
-
-    int count = 0, clusterCount = 0;
-
-    for (int i = 0; i < size; i++) {
-        fprintf(output_file, "%d ", nodes[i].index);
-        count++;
-
-        if (count >= idealSize && clusterCount < k - 1) {
-            fprintf(output_file, "\n");
-            count = 0;
-            clusterCount++;
-        }
-    }
-    fprintf(output_file, "\n");
-
-    free(nodes);
+  free(nodes);
 }

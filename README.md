@@ -286,7 +286,7 @@ Algorytmem używanym do dzielenia grafu jest `Spectral Clustering`. Algorytm ten
    W naszym przypadku musimy policzyć wyznacznik z macierzy Laplace'a minus macierz lambda:
    
    $$
-det(L - \lambda I) = 0
+   det(L - \lambda I) = 0
    $$
    
    Aby uzyskać wynik iterujemy po coraz lepszych wersjaach wektora własnego aż powyższe działanie jest wystarczająco dokładne. Używamy do tego metody [Gauss - Siedel](https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method) .
