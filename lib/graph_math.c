@@ -1,5 +1,6 @@
 #include "graph_math.h"
 
+// @complexity O(nodes)
 double normalizedVectorDifference(double* a, double* b, int nodes){
 	double sum = 0;
 	for(int i = 0; i < nodes; i++){
@@ -10,6 +11,7 @@ double normalizedVectorDifference(double* a, double* b, int nodes){
 	return sqrt(sum);
 }
 
+// @complexity O(nodes)
 void normalizeVector(double* vector, int nodes){
 	double norm = 0;
 	for(int i = 0; i < nodes; i++) norm += vector[i] * vector[i];
@@ -19,7 +21,7 @@ void normalizeVector(double* vector, int nodes){
 	for(int i = 0; i < nodes; i++) vector[i] /= norm;
 }
 
-
+// @complexity O(nodes)
 void substractMean(double* vector, int nodes) {
     double sum = 0.0;
     for (int i = 0; i < nodes; i++) sum += vector[i];
@@ -27,6 +29,7 @@ void substractMean(double* vector, int nodes) {
     for (int i = 0; i < nodes; i++) vector[i] -= mean;
 }
 
+// @complexity O(edges)
 double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 	double *solution = calloc(nodes, sizeof(double));
 	if(!solution){
@@ -83,6 +86,7 @@ double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 	return solution;
 }
 
+// @complexity O(edges)
 double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
 	srand(time(NULL));
 	double* eigenvector = malloc(nodes * sizeof(double));
@@ -118,6 +122,7 @@ double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
 		free(new_guess);
 
 		double err = normalizedVectorDifference(eigenvector, previous_eigenvector, nodes);
+		
 		if(err < 2.0/nodes){
 			conditionalPrintf("\tZnaleziono wektor Fiedlera w %d iteracjach.\n", i);
 			break;

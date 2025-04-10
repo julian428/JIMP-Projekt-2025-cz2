@@ -68,6 +68,7 @@ int main(int argc, char** argv){
 
 	fclose(file);
   qsort(adjc, edges, sizeof(Node), comparenodes);
+	conditionalPrintf("Pierwotna macierz sąsiedztwa:\n");
 	printSparseMatrix(adjc, nodes, edges);
 
 	int new_edges = 0;
@@ -77,6 +78,7 @@ int main(int argc, char** argv){
 		conditionalPrintf("\tNie udało się zsymetralizować macierzy rzadkiej.\n");
 		return 1;
 	}
+	conditionalPrintf("Symetryczna macierz sąsiedztwa:\nNowa ilość krawędzi: %d\n", edges);
 	printSparseMatrix(adjc, nodes, edges);
 
 	Node* laplacian = sparseMatrixToLaplacian(adjc, nodes, edges);
@@ -87,6 +89,7 @@ int main(int argc, char** argv){
 	}
 	free(adjc);
 	edges += nodes;
+	conditionalPrintf("Macierz Laplace'a:\nNowa ilość krawędzi: %d\n", edges);
 	printSparseMatrix(laplacian, nodes, edges);
 
   qsort(laplacian, edges, sizeof(Node), comparenodes);
