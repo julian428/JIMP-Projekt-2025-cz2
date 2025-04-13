@@ -63,6 +63,8 @@ void clusterEigenvector(FILE* output_file, double *eigenvector, int eigenvector_
     double max_cluster_size = ceil(ideal_cluster_size * (1 + percentage / 100.0));
     int remainder = eigenvector_size % cluster_count;
 
+		fprintf(output_file, "nodes:%d clusters:%d percentage:%lf cluster_size:%d\n", eigenvector_size, cluster_count, percentage, ideal_cluster_size);
+
     int current_index = 0;
     for (int c = 0; c < cluster_count; c++) {
         int cluster_size = ideal_cluster_size + (remainder > 0 ? 1 : 0);
