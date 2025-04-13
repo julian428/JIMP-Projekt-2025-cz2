@@ -45,45 +45,38 @@ Node* fileToSparseMatrix(FILE* file, int* foreign_nodes, int* foreign_edges){
 	return sparse_matrix;
 }
 
-void clusterEigenvector(FILE* output_file, double *eigenvector, int size, int k, double percentage) {
-	// zaminiam podaną tablice wektorową na tablicę struct-ów
-  EigenNode *nodes = (EigenNode *)malloc(size * sizeof(EigenNode));
-  if (!nodes) {
-    fprintf(stderr, "\tNie udało się zaalokować pamięci na wektor własny.\n");
-		return;
-  }
-  for (int i = 0; i < size; i++) {
-    nodes[i].index = i;
-    nodes[i].value = eigenvector[i];
-  }
-
-  qsort(nodes, size, sizeof(EigenNode), compareEigenNodes);
-
-  int idealSize = size / k;
-	int freeNodes = size % k;
-
-  int count = 0, clusterCount = 0;
-
-  for (int i = 0; i < size; i++) {
-    fprintf(output_file, "%d ", nodes[i].index);
-    count++;
-
-    if (count >= idealSize && clusterCount < k - 1) {
-			if(freeNodes > 0 && i < size - 2){
-				double distanceLeft = fabs(nodes[i+1].value-nodes[i].value);
-				double distanceRight = fabs(nodes[i+2].value-nodes[i+1].value);
-
-				if(distanceLeft < distanceRight){
-					fprintf(output_file, "%d ", nodes[++i].index);
-					freeNodes--;
-				}
-			}
-      fprintf(output_file, "\n");
-      count = 0;
-      clusterCount++;
+void clusterEigenvector(FILE* output_file, double *eigenvector, int eigenvector_size, int cluster_count, double percentage) {
+    EigenNode *nodes = (EigenNode*)malloc(eigenvector_size * sizeof(EigenNode));
+    if (!nodes) {
+        conditionalPrintf("Nie udało się zaalokować pamięci na wektor wierzchołków.\tclusterEigenvector:read_graph.c\n");
+        return;
     }
-  }
-  fprintf(output_file, "\n");
 
-  free(nodes);
+    for (int i = 0; i < eigenvector_size; i++) {
+        nodes[i].index = i;
+        nodes[i].value = eigenvector[i];
+    }
+
+    qsort(nodes, eigenvector_size, sizeof(EigenNode), compareEigenNodes);
+
+    int ideal_cluster_size = eigenvector_size / cluster_count;
+    double max_cluster_size = ceil(ideal_cluster_size * (1 + percentage / 100.0));
+    int remainder = eigenvector_size % cluster_count;
+
+    int current_index = 0;
+    for (int c = 0; c < cluster_count; c++) {
+        int cluster_size = ideal_cluster_size + (remainder > 0 ? 1 : 0);
+        if (cluster_size > max_cluster_size) {
+            cluster_size = (int)max_cluster_size;
+        }
+        remainder--;
+
+        for (int j = 0; j < cluster_size && current_index < eigenvector_size; j++) {
+            fprintf(output_file, "%d ", nodes[current_index].index);
+            current_index++;
+        }
+        fprintf(output_file, "\n");
+    }
+
+    free(nodes);
 }
