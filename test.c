@@ -4,6 +4,8 @@
 #include <math.h>
 #include <string.h>
 
+#define TEST_COUNT 6
+
 int getNextNumberInFile(FILE* file, int *f_number){// f_number - zmienna podana do nadpisania
 	char ch;
 	int number = 0;
@@ -52,11 +54,18 @@ int testFile(char* file_name){
 }
 
 int main(int argc, char** argv){
-	char* file_name = "clusters.txt";
-	int test_count = 1;
-	for(int i = 0; i < test_count; i++){
-		int test_result = testFile(file_name);
+	int prime_numbers[TEST_COUNT] = {7, 19, 43, 61, 71, 89};
+
+	for(int i = 0; i < TEST_COUNT; i++){
+		char buffer[64];
+		sprintf(buffer, "./bin/divide_graph -i jimp2/projekt-4/dane/graf%d.csrrg -c %d", i+1, prime_numbers[i]);
+		int result = system(buffer);
+		if(result != 0) return 1;
+
+		int test_result = testFile("clusters.txt");
+
 		char* message = test_result == 2 ? "\x1B[31mFAILURE\x1B[0m" : test_result == 1 ? "\x1B[33mWARNING\x1B[0m" : "\x1B[32mSUCCESS\x1B[0m";
-		printf("%s. %s\n", message, file_name);
+		printf("%s. graf%d.csrrg\n", message, i+1);
 	}
+	system("rm clusters.txt");
 }
