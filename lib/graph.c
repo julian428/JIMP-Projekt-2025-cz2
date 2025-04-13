@@ -3,7 +3,7 @@
 Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges){
 	int* degree_vector = (int*)calloc(vertesies, sizeof(int));
 	if(!degree_vector){
-		conditionalPrintf("\tNie udało się zaalokować pamięci na wektor diagonalny. graph.c:sparseMatrixToLaplacian\n");
+		fprintf(stderr, "\tNie udało się zaalokować pamięci na wektor diagonalny. graph.c:sparseMatrixToLaplacian\n");
 		return NULL;
 	}
 
@@ -14,7 +14,7 @@ Node* sparseMatrixToLaplacian(Node* sparce_matrix, int vertesies, int edges){
 
 	Node* laplacian = (Node*)malloc((edges + vertesies) * sizeof(Node));
 	if(!laplacian){
-		conditionalPrintf("\tNie udało się zaalokować pamięci na macierz Laplace'a. graph.c:sparseMatrixToLaplacian\n");
+		fprintf(stderr, "\tNie udało się zaalokować pamięci na macierz Laplace'a. graph.c:sparseMatrixToLaplacian\n");
 		free(degree_vector);
 		return NULL;
 	}
@@ -47,7 +47,7 @@ Node *makeSymmetric(Node *sparse_matrix, int nodes, int edges, int *new_size) {
   int capacity = edges * 2;
   Node *symmetric_array = (Node *)malloc(capacity * sizeof(Node));
   if (!symmetric_array) {
-    conditionalPrintf("Nie udało się zaalokować pamięci na powiększoną macierz symetryczną. graph.c:makeSymmetric\n");
+    fprintf(stderr, "Nie udało się zaalokować pamięci na powiększoną macierz symetryczną. graph.c:makeSymmetric\n");
     return NULL;
   }
 
