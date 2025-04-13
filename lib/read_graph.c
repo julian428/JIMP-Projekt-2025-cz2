@@ -45,7 +45,6 @@ Node* fileToSparseMatrix(FILE* file, int* foreign_nodes, int* foreign_edges){
 	return sparse_matrix;
 }
 
-
 void clusterEigenvector(FILE* output_file, double *eigenvector, int eigenvector_size, int cluster_count, double percentage) {
     EigenNode *nodes = (EigenNode*)malloc(eigenvector_size * sizeof(EigenNode));
     if (!nodes) {
