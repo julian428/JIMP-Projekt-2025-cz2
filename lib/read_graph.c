@@ -48,7 +48,7 @@ Node* fileToSparseMatrix(FILE* file, int* foreign_nodes, int* foreign_edges){
 void clusterEigenvector(FILE* output_file, double *eigenvector, int eigenvector_size, int cluster_count, double percentage) {
     EigenNode *nodes = (EigenNode*)malloc(eigenvector_size * sizeof(EigenNode));
     if (!nodes) {
-        conditionalPrintf("Nie udało się zaalokować pamięci na wektor wierzchołków.\tclusterEigenvector:read_graph.c\n");
+        fprintf(stderr, "Nie udało się zaalokować pamięci na wektor wierzchołków.\tclusterEigenvector:read_graph.c\n");
         return;
     }
 
@@ -62,6 +62,8 @@ void clusterEigenvector(FILE* output_file, double *eigenvector, int eigenvector_
     int ideal_cluster_size = eigenvector_size / cluster_count;
     double max_cluster_size = ceil(ideal_cluster_size * (1 + percentage / 100.0));
     int remainder = eigenvector_size % cluster_count;
+
+		fprintf(output_file, "nodes:%d clusters:%d percentage:%lf cluster_size:%d\n", eigenvector_size, cluster_count, percentage, ideal_cluster_size);
 
     int current_index = 0;
     for (int c = 0; c < cluster_count; c++) {
