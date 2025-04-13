@@ -7,8 +7,6 @@
 
 #include "graph.h"
 
-extern int LOG;
-
 char* getParameter(int param_count, char** params, char* param_prefix);
 void printSparseMatrix(Node* sparse_matrix, int vertesies, int edges);
 int comparenodes(const void *a, const void *b);
