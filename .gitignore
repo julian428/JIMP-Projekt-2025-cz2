@@ -1,5 +1,6 @@
 bin
 /*.txt
+test
 .obsidian
 calgrind.out.*
 /*.png

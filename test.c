@@ -50,11 +50,11 @@ int main(int argc, char** argv){
 		node_count++;
 	}
 
-	printf("nodes clustered: %d\nnodes skipped: %d\n\n", node_count, node_count - max_node_number - 1);
+	printf("Wierzchołki w klastrach: %d\nOminięte wierzchołki: %d\n\n", node_count, node_count - max_node_number - 1);
 	
-	printf("Cluster check:\n");
+	printf("Sprawdzenie klastrów:\n");
 	int ideal_cluster_size = node_count/cluster_count;
-	printf("Ideal cluster size: %d\n\n", ideal_cluster_size);
+	printf("Idealny rozmiar klastra: %d\n\n", ideal_cluster_size);
 	rewind(file);
 	for(int cluster = 0; cluster < cluster_count; cluster++){
 		int current_node_count = 0;
