@@ -55,7 +55,7 @@ double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 			int column = position % nodes;
 
 			if(diagonal_value == 0){
-				diagonal_value = EPSILON;
+				diagonal_value = 1;
 				conditionalPrintf("\tNapotkano wartość diagonalną w wierszu %d na pozycji absolutnej %d.\n", row, position);
 			}
 
@@ -123,7 +123,7 @@ double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
 
 		double err = normalizedVectorDifference(eigenvector, previous_eigenvector, nodes);
 		
-		if(err < 2.0/nodes){
+		if(err < 0.2/nodes){
 			conditionalPrintf("\tZnaleziono wektor Fiedlera w %d iteracjach.\n", i);
 			break;
 		}
