@@ -6,3 +6,4 @@ calgrind.out.*
 /*.png
 *.dot
 *.csrrg
+*.out
