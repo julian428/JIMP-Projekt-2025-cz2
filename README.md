@@ -110,12 +110,12 @@ make test
 Wynik tego polecenia będzie podobny do tego:
 
 ```test
-SUCCESS. graf1.csrrg
-SUCCESS. graf2.csrrg
-SUCCESS. graf3.csrrg
-SUCCESS. graf4.csrrg
-FAILURE. graf5.csrrg
-WARNING. graf6.csrrg
+SUCCESS. graf1.csrrg@c=714 p=84.990000
+SUCCESS. graf2.csrrg@c=481 p=63.210000
+SUCCESS. graf3.csrrg@c=407 p=1.860000
+SUCCESS. graf4.csrrg@c=261 p=88.560000
+SUCCESS. graf5.csrrg@c=813 p=74.960000
+SUCCESS. graf6.csrrg@c=497 p=83.600000
 ```
 
 gdzie:
@@ -124,7 +124,11 @@ gdzie:
 
 **WARNING** - granica procentowa jest za mała dla podanych parametrów. Na przykład kiedy chcemy podzielić graf 6 wierzchołkowy na 4 klastry część klastrów będzie musiała mieć rozmiar 2, a jest to 100% więcej od rozmiaru idealnego, czyli gdyby użytkownik podał wartość 10% to ta wartość jest nie możliwa i wtedy pokazywany jest komunikat **WARNING**
 
-FAILURE - jest pokazywany kiedy rozmiar grafu przekracza podaną oraz minimalną wartość procentową zmiany rozmiaru klastru.
+**FAILURE** - jest pokazywany kiedy rozmiar grafu przekracza podaną oraz minimalną wartość procentową zmiany rozmiaru klastru.
+
+Następnie podawana jest nazwa pliku, który był testowany a po znaku `@`:
+**c** - ilość klastrów wylosowanych do testu
+**p** - procent wylosowany do testu
 
 ## Dokumentacja funkcjonalna
 
