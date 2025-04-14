@@ -53,7 +53,7 @@ Program może przyjąć do 5 parametrów.
    *Przykładowy obraz grafu.*
    ![przyklad_graf_graphviz.png](assets/przyklad_graf_graphviz.png)
 
-#### Na przykład
+#### Przykładowe wywołanie programu z parametrami
 
 ```bash
 ./bin/divide_graph -i graf.csrrg -o regiony.txt -c 4 -p 20 -g graph.dot
@@ -88,13 +88,13 @@ nodes:6 clusters:2 percentage:10.000000 cluster_size:3
 3 4 5
 ```
 
-Gdzie pierwsza linijka jest linijką informacyjnną zawierającą:
+W pliku wyjściowym pierwsza linijka jest linijką informacyjnną zawierającą:
 - nodes - ilość wierzchołków
 - clusters - ilość klastrów
 - percentage - dozwolona różnica rozmiaru od idealnego rozmiaru klastra
 - cluster_size - idealny rozmiar klastra
 
-**W pliku wyjściowym każda linijka to oddzielny klaster.**
+A każda następna linijka to oddzielny klaster
 
 #### Wygląd grafu z podanych przykładów powyżej.
 !["zdjęcie przykładowego grafu"](assets/example_graph.png)
@@ -128,7 +128,7 @@ gdzie:
 
 Następnie podawana jest nazwa pliku, który był testowany a po znaku `@`:
 **c** - ilość klastrów wylosowanych do testu
-**p** - procent wylosowany do testu
+**p** - procent marginesu wylosowany do testu
 
 ## Dokumentacja funkcjonalna
 
@@ -321,7 +321,7 @@ Algorytmem używanym do dzielenia grafu jest `Spectral Clustering`. Algorytm ten
    Jeżeli zastosujemy Metodę [Power Iteration](https://en.wikipedia.org/wiki/Power_iteration) to macierzy odwrotnej dostaniemy najmniejszy wektor własny wyłączając wektor zerowy. 
    Metoda ta działa podobnie jak [Metoda Newtona](https://en.wikipedia.org/wiki/Newton%27s_method) gdzie najpierw zgadujemy poprawną odpowiedź a w następnych iteracjach poprawiamy ją.
    W naszym przypadku musimy policzyć wyznacznik z macierzy Laplace'a minus macierz lambda:
-   
+
    $$
    det(L - \lambda I) = 0
    $$
