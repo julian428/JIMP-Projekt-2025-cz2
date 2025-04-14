@@ -2,13 +2,11 @@
 
 int createGraphFile(char* input_file, char* output_file){
 	char buffer[512];
-	sprintf(buffer, "./jimp2/projekt-4/bin/graphdecoder %s > %s", input_file, output_file);
-	return system(buffer);
-}
-
-int createGraphFile2(char* input_file, char* output_file){
-	char buffer[512];
 	sprintf(buffer, "./jimp2/projekt-4/bin/translate %s %s", input_file, output_file);
+	int first_try = system(buffer);
+	if(first_try == 0) return first_try;
+	
+	sprintf(buffer, "./jimp2/projekt-4/bin/graphdecoder %s > %s", input_file, output_file);
 	return system(buffer);
 }
 
