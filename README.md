@@ -40,14 +40,13 @@ make
 
 ### Szczegóły wywoływania programu.
 
-Program może przyjąć do 6 parametrów.
+Program może przyjąć do 5 parametrów.
 
 1. Plik wejściowy `-i` ( czyli plik w formacie csrrg )
 2. Plik wyjściowy `-o` ( czyli plik w którym zapisane będą klastry )
 3. Ilość klastrów `-c` ( czyli na ile klastrów ma być podzielony graf )
 4. Procent marginesu `-p` ( czyli procent maksymalnej różnicy pomiędzy rozmiarem klastrów )
-5. `-l` Czy wyswietlac informacje szczegolowe podczas dzialania programu.
-6. `-g` nazwa pliku do którego ma być zapisany plik .dot. Jeżeli takowy nie zostanie podany, plik .dot nie zostanie wygenerowany.
+5. `-g` nazwa pliku do którego ma być zapisany plik .dot. Jeżeli takowy nie zostanie podany, plik .dot nie zostanie wygenerowany.
    
    *Plik dot może być użyty do wygenerowania obrazu grafu na przykład za pomocą programu [graphviz](https://graphviz.org/)*
    
@@ -57,7 +56,7 @@ Program może przyjąć do 6 parametrów.
 #### Na przykład
 
 ```bash
-./bin/divide_graph -i graf.csrrg -o regiony.txt -c 4 -p 20 -l 1 -g graph.dot
+./bin/divide_graph -i graf.csrrg -o regiony.txt -c 4 -p 20 -g graph.dot
 ```
 
 Parametry mogą być ustawione w dowolnej kolejności. Nie koniecznie tak jak w powyższym przykładzie.
@@ -84,15 +83,48 @@ Wejście
 
 Wyjście
 ```clusters.txt
+nodes:6 clusters:2 percentage:10.000000 cluster_size:3
 0 1 2
 3 4 5
 ```
+
+Gdzie pierwsza linijka jest linijką informacyjnną zawierającą:
+- nodes - ilość wierzchołków
+- clusters - ilość klastrów
+- percentage - dozwolona różnica rozmiaru od idealnego rozmiaru klastra
+- cluster_size - idealny rozmiar klastra
 
 **W pliku wyjściowym każda linijka to oddzielny klaster.**
 
 #### Wygląd grafu z podanych przykładów powyżej.
 !["zdjęcie przykładowego grafu"](assets/example_graph.png)
 
+
+### Uruchamianie testów
+Aby uruchomić testy dzielenia grafu należy w folderze z projektem:
+
+```bash
+make test
+```
+
+Wynik tego polecenia będzie podobny do tego:
+
+```test
+SUCCESS. graf1.csrrg
+SUCCESS. graf2.csrrg
+SUCCESS. graf3.csrrg
+SUCCESS. graf4.csrrg
+FAILURE. graf5.csrrg
+WARNING. graf6.csrrg
+```
+
+gdzie:
+
+**SUCCESS** - plik z klastrami jest zgodny z informacjami podanymi przez użytkownika czyli ilość klastrów i ich rozmiar się zgadza lub jest w granicach procentowych podanych przez użytkownika.
+
+**WARNING** - granica procentowa jest za mała dla podanych parametrów. Na przykład kiedy chcemy podzielić graf 6 wierzchołkowy na 4 klastry część klastrów będzie musiała mieć rozmiar 2, a jest to 100% więcej od rozmiaru idealnego, czyli gdyby użytkownik podał wartość 10% to ta wartość jest nie możliwa i wtedy pokazywany jest komunikat **WARNING**
+
+FAILURE - jest pokazywany kiedy rozmiar grafu przekracza podaną oraz minimalną wartość procentową zmiany rozmiaru klastru.
 
 ## Dokumentacja funkcjonalna
 
@@ -270,6 +302,7 @@ Podział jest robiony na podstawie odległości pomiędzy wartościami przypisan
 Wynikiem przykładu jest podział na dwa klastry:
 
 ```
+nodes:6 clusters:2 percentage:10.000000 cluster_size:3
 0 1 2
 3 4 5
 ```
