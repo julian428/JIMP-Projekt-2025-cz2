@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 
 #define TEST_COUNT 6
 
@@ -54,18 +55,20 @@ int testFile(char* file_name){
 }
 
 int main(int argc, char** argv){
-	int prime_numbers[TEST_COUNT] = {7, 19, 43, 61, 71, 89};
+	srand(time(NULL));
 
 	for(int i = 0; i < TEST_COUNT; i++){
+		int random_cluster_count = rand()%1000;
+		double random_percentage = (double)(rand()%9900)/100;
 		char buffer[64];
-		sprintf(buffer, "./bin/divide_graph -i jimp2/projekt-4/dane/graf%d.csrrg -c %d", i+1, prime_numbers[i]);
+		sprintf(buffer, "./bin/divide_graph -i jimp2/projekt-4/dane/graf%d.csrrg -c %d -p %lf", i+1, random_cluster_count, random_percentage);
+
 		int result = system(buffer);
 		if(result != 0) return 1;
-
 		int test_result = testFile("clusters.txt");
 
 		char* message = test_result == 2 ? "\x1B[31mFAILURE\x1B[0m" : test_result == 1 ? "\x1B[33mWARNING\x1B[0m" : "\x1B[32mSUCCESS\x1B[0m";
-		printf("%s. graf%d.csrrg\n", message, i+1);
+		printf("%s. graf%d.csrrg@c=%d p=%lf\n", message, i+1, random_cluster_count, random_percentage);
 	}
 	system("rm clusters.txt");
 }
