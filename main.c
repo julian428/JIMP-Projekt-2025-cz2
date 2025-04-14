@@ -39,7 +39,7 @@ int main(int argc, char** argv){
 
 	// koniec parametrów
 	
-	int res = createGraphFile2(input_file, "output.txt");
+	int res = createGraphFile(input_file, "output.txt");
 	if(res != 0){
 		fprintf(stderr, "\tNie udało się przetłumaczyć pliku \"%s\".\n", input_file);
 		return 1;
