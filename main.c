@@ -9,7 +9,7 @@
 int main(int argc, char** argv){
 	int nodes = 0;
 	int edges = 0;	
-	char* output_file = "clusters.txt";
+	char* output_file = "clusters.clusters";
 	char* input_file = "jimp2/projekt-4/dane/graf.csrrg";
 	char* dot_file = "clusters.dot";
 	int generate_dot = 0;

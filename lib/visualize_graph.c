@@ -19,9 +19,15 @@ int skipPositionalMatrix(FILE* matrix_file){
     return 1;
 }
 
+void skipLine(FILE *file) {
+    int ch;
+    while ((ch = fgetc(file)) != '\n' && ch != EOF);
+}
+
 void createDotFile(char* connectionsfile_name, char* clusterfile_name, char* dotfile_name, int clusters){
 	FILE* cluster_file = fopen(clusterfile_name, "r");
 	if(!cluster_file) return;
+	skipLine(cluster_file);
 	
 	FILE* dotfile = fopen(dotfile_name, "w");
 	if(!dotfile){
@@ -35,7 +41,7 @@ void createDotFile(char* connectionsfile_name, char* clusterfile_name, char* dot
 
 	char ch;
 	for (int row = 0; row < clusters; row++) {
-    fprintf(dotfile, "\tsubgraph cluster_%d {\n\t\tlabel = \"Region %d\";\n\t\tstyle = filled;\n\t\tcolor = light%s;\n\t\tnode [style=filled, color=white];\n\t\t", row, row+1, colors[row%4]);
+    fprintf(dotfile, "\tsubgraph cluster_%d {\n\t\tlabel = \"Region %d\";\n\t\tstyle = filled;\n\t\tcolor = %s;\n\t\tnode [style=filled, color=white];\n\t\t", row, row+1, colors[row%4]);
 
     ch = fgetc(cluster_file);
     if (ch == EOF) break;
@@ -64,7 +70,7 @@ void createDotFile(char* connectionsfile_name, char* clusterfile_name, char* dot
 
 	int from, to;
 	while(fscanf(connectionsfile, "%d - %d\n", &from, &to) == 2){
-		fprintf(dotfile, "\t%d -> %d [color=%s];\n", from, to, colors[from % 4]);
+		fprintf(dotfile, "\t%d -> %d;\n", from, to);
 	}
 
 	fprintf(dotfile, "}\n");
