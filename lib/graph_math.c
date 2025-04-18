@@ -12,6 +12,15 @@ double normalizedVectorDifference(double* a, double* b, int nodes){
 }
 
 // @complexity O(nodes)
+double dotProduct(double* a, double* b, int nodes) {
+    double dot = 0;
+    for (int i = 0; i < nodes; i++) {
+        dot += a[i] * b[i];
+    }
+    return dot;
+}
+
+// @complexity O(nodes)
 void normalizeVector(double* vector, int nodes){
 	double norm = 0;
 	for(int i = 0; i < nodes; i++) norm += vector[i] * vector[i];
@@ -86,7 +95,7 @@ double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 }
 
 // @complexity O(edges)
-double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
+double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges, double* skip_vector){
 	srand(time(NULL));
 	double* eigenvector = malloc(nodes * sizeof(double));
 	if(!eigenvector){
@@ -115,6 +124,13 @@ double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
 		for(int n = 0; n < nodes; n++) previous_eigenvector[n] = eigenvector[n];
 		double* new_guess = gaussSeidelSolver(sparse_matrix, nodes, edges, previous_eigenvector);
 
+		if(skip_vector){
+			double dot = dotProduct(new_guess, skip_vector, nodes);
+			for(int i = 0; i < nodes; i++){
+				new_guess[i] -= dot * skip_vector[i];
+			}
+		}
+
 		substractMean(new_guess, nodes);
 		normalizeVector(new_guess, nodes);
 		for(int n = 0; n < nodes; n++) eigenvector[n] = new_guess[n];
@@ -122,7 +138,7 @@ double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges){
 
 		double err = normalizedVectorDifference(eigenvector, previous_eigenvector, nodes);
 		
-		if(err < 0.2/nodes){
+		if(err < TOL){
 			break;
 		}
 	}

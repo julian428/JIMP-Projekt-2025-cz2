@@ -10,6 +10,26 @@ int createGraphFile(char* input_file, char* output_file){
 	return system(buffer);
 }
 
+int skipPMatrix(FILE* matrix_file){
+    int newline = 0;
+    char ch;
+
+    while ((ch = fgetc(matrix_file)) != EOF) {
+        if (ch == '\n') {
+            newline = 1;
+        } else if (newline && ch != ' ') {
+            fseek(matrix_file, -1, SEEK_CUR);
+            return 0;
+        } else {
+            newline = 0;
+        }
+    }
+
+    return 1;
+}
+
+
+
 int countNodesInFile(FILE* file){
 	char ch;
 	int nodes = 0;
@@ -43,25 +63,14 @@ Node* fileToSparseMatrix(FILE* file, int* foreign_nodes, int* foreign_edges){
 	return sparse_matrix;
 }
 
-void clusterEigenvector(FILE* output_file, double *eigenvector, int eigenvector_size, int cluster_count, double percentage) {
-    EigenNode *nodes = (EigenNode*)malloc(eigenvector_size * sizeof(EigenNode));
-    if (!nodes) {
-        fprintf(stderr, "Nie udało się zaalokować pamięci na wektor wierzchołków.\tclusterEigenvector:read_graph.c\n");
-        return;
-    }
+void clusterEigenvector(FILE* output_file, EigenNode *eigen_nodes, int nodes, int edges, int cluster_count, double percentage) {
+    qsort(eigen_nodes, nodes, sizeof(EigenNode), compareEigenNodes);
 
-    for (int i = 0; i < eigenvector_size; i++) {
-        nodes[i].index = i;
-        nodes[i].value = eigenvector[i];
-    }
-
-    qsort(nodes, eigenvector_size, sizeof(EigenNode), compareEigenNodes);
-
-    int ideal_cluster_size = eigenvector_size / cluster_count;
+    int ideal_cluster_size = nodes / cluster_count;
     double max_cluster_size = ceil(ideal_cluster_size * (1 + percentage / 100.0));
-    int remainder = eigenvector_size % cluster_count;
+    int remainder = nodes % cluster_count;
 
-		fprintf(output_file, "nodes:%d clusters:%d percentage:%lf cluster_size:%d\n", eigenvector_size, cluster_count, percentage, ideal_cluster_size);
+		fprintf(output_file, "nodes:%d edges:%d clusters:%d percentage:%lf cluster_size:%d\n", nodes, edges, cluster_count, percentage, ideal_cluster_size);
 
     int current_index = 0;
     for (int c = 0; c < cluster_count; c++) {
@@ -71,12 +80,20 @@ void clusterEigenvector(FILE* output_file, double *eigenvector, int eigenvector_
         }
         remainder--;
 
-        for (int j = 0; j < cluster_size && current_index < eigenvector_size; j++) {
-            fprintf(output_file, "%d ", nodes[current_index].index);
+        for (int j = 0; j < cluster_size && current_index < nodes; j++) {
+						eigen_nodes[current_index].cluster = c;
+            fprintf(output_file, "%d;%d@%lf;%lf ", eigen_nodes[current_index].index, eigen_nodes[current_index].cluster, eigen_nodes[current_index].x, eigen_nodes[current_index].y);
             current_index++;
         }
         fprintf(output_file, "\n");
     }
 
-    free(nodes);
+	FILE* connectionsfile = fopen("output.txt", "r");
+	skipPMatrix(connectionsfile);
+
+	int from, to;
+	while(fscanf(connectionsfile, "%d - %d\n", &from, &to) == 2){
+		fprintf(output_file, "%d -> %d\n", from, to);
+	}
+	fclose(connectionsfile);
 }
