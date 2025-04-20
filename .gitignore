@@ -7,3 +7,5 @@ calgrind.out.*
 *.dot
 *.csrrg
 *.out
+*.clusters
+*.cluster
