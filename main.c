@@ -85,10 +85,29 @@ int main(int argc, char** argv){
 
 	// koniec przygotowywania
 
-	double* eigenvector = inversePowerIteration(laplacian, nodes, edges);
+	double* eigenvector = inversePowerIteration(laplacian, nodes, edges, NULL);
 	if(!eigenvector){
 		fprintf(stderr, "\tNie udało się znaleźć wektora własnego.\n");
 		return 1;
+	}
+
+	double* eigenvector2 = inversePowerIteration(laplacian, nodes, edges, eigenvector);
+	if(!eigenvector2){
+		fprintf(stderr, "\tNie udało się znaleźć drugiego wektora własnego.\n");
+		return 1;
+	}
+
+  EigenNode *eigen_nodes = (EigenNode*)malloc(nodes * sizeof(EigenNode));
+	if(!eigen_nodes){
+		fprintf(stderr, "\tNie udało się zaalokować pamięci na wierzchołki własne.\n");
+		return 1;
+	}
+
+	for(int i = 0; i < nodes; i++){
+		eigen_nodes[i].index = i;
+		eigen_nodes[i].x = eigenvector[i];
+		eigen_nodes[i].y = eigenvector2[i];
+		eigen_nodes[i].cluster = 0;
 	}
 
 	FILE* clusters_file = fopen(output_file, "w");
@@ -98,13 +117,14 @@ int main(int argc, char** argv){
 		return 1;
 	}
 
-  clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
+  clusterEigenvector(clusters_file, eigen_nodes, nodes, (edges-nodes)/2, cluster_count, percentage);
 	fclose(clusters_file);
 
 	if(generate_dot){
 		createDotFile("output.txt", output_file, dot_file, cluster_count);
 	}
 
+	free(eigenvector2);
   free(eigenvector);
 	free(laplacian);
 	return 0;

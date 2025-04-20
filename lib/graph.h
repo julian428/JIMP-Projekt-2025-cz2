@@ -13,7 +13,9 @@ typedef struct Node_ {
 
 typedef struct {
     int index; // oryginalny index w tabeli
-    double value;
+    double x;
+		double y;
+		int cluster;
 } EigenNode;
 
 #include "read_graph.h"
