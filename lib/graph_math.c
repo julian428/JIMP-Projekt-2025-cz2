@@ -39,7 +39,7 @@ void substractMean(double* vector, int nodes) {
 }
 
 // @complexity O(edges)
-double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
+double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x, double sigma){
 	double *solution = calloc(nodes, sizeof(double));
 	if(!solution){
 		fprintf(stderr, "\tNie udało się zaalokować pamięci na wektor wynikowy. graph_math.c:gaussSeidelSolver\n");
@@ -75,7 +75,7 @@ double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 			}
 
 			if(row == column){
-				diagonal_value = value;
+				diagonal_value = value - sigma;
 				continue;
 			}
 
@@ -95,7 +95,7 @@ double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x){
 }
 
 // @complexity O(edges)
-double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges, double* skip_vector){
+double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges, double* skip_vector, double sigma){
 	srand(time(NULL));
 	double* eigenvector = malloc(nodes * sizeof(double));
 	if(!eigenvector){
@@ -122,7 +122,7 @@ double* inversePowerIteration(Node* sparse_matrix, int nodes, int edges, double*
 	
 	for(int i = 0; i < MAX_ITER; i++){
 		for(int n = 0; n < nodes; n++) previous_eigenvector[n] = eigenvector[n];
-		double* new_guess = gaussSeidelSolver(sparse_matrix, nodes, edges, previous_eigenvector);
+		double* new_guess = gaussSeidelSolver(sparse_matrix, nodes, edges, previous_eigenvector, sigma);
 
 		if(skip_vector){
 			double dot = dotProduct(new_guess, skip_vector, nodes);

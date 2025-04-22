@@ -8,32 +8,35 @@ double distance(EigenNode a, EigenNode b){
 	return d;
 }
 
-int assignClusters(EigenNode *nodes, EigenNode *centroids, int node_count, int cluster_count, double percentage){
+int assignClusters(EigenNode *nodes, EigenNode *centroids, int node_count, int cluster_count, double percentage) {
 	int changed = 0;
-	int max_size = (int)ceil((1.0 + percentage) * (node_count / cluster_count));
+	int max_size = (int)((1.0 + percentage) * (node_count / cluster_count));
 	int *cluster_counts = (int*)calloc(cluster_count, sizeof(int));
 
 	// wypełnienie ilości wierzchołków w klastrach
-	for(int i = 0; i < node_count; i++){
+	for (int i = 0; i < node_count; i++) {
 		int cluster = nodes[i].cluster;
 		cluster_counts[cluster]++;
 	}
 
-	for(int i = 0; i < node_count; i++){
-		double minimum_distance = distance(nodes[i], centroids[0]);
-		int assigned_cluster = 0;
+	for (int i = 0; i < node_count; i++) {
+		int best_cluster = -1;
+		double best_distance = DBL_MAX;
 
-		for(int j = 1; j < cluster_count; j++){
-			double current_distance = distance(nodes[i], centroids[j]);
-			if(current_distance > minimum_distance || cluster_counts[j] > max_size) continue;
-			minimum_distance = current_distance;
-			assigned_cluster = j;
+		for (int j = 0; j < cluster_count; j++) {
+			if (cluster_counts[j] >= max_size && j != nodes[i].cluster) continue;
+
+			double dist = distance(nodes[i], centroids[j]);
+			if (dist < best_distance) {
+				best_distance = dist;
+				best_cluster = j;
+			}
 		}
 
-		if(nodes[i].cluster != assigned_cluster){
+		if (best_cluster != -1 && best_cluster != nodes[i].cluster) {
 			cluster_counts[nodes[i].cluster]--;
-			nodes[i].cluster = assigned_cluster;
-			cluster_counts[assigned_cluster]++;
+			cluster_counts[best_cluster]++;
+			nodes[i].cluster = best_cluster;
 			changed = 1;
 		}
 	}
@@ -67,8 +70,9 @@ void updateCentroids(EigenNode *nodes, EigenNode *centroids, int node_count, int
 
 void meanClustering(EigenNode *nodes, int node_count, int cluster_count, double percentage){
 	EigenNode *centroids = (EigenNode*)malloc(cluster_count * sizeof(EigenNode));
+	int cluster_size = node_count / cluster_count;
 
-	for(int i = 0; i < cluster_count; i++) centroids[i] = nodes[i];
+	for(int i = 0; i < cluster_count; i++) centroids[i] = nodes[i*cluster_size];
 
 	int changed = 1;
 	for(int i = 0; changed && i < MAX_ITER; i++){
