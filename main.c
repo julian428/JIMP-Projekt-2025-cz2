@@ -119,9 +119,6 @@ int main(int argc, char** argv){
 	}
 
 	meanClustering(eigen_nodes, nodes, cluster_count, percentage / 100.0);
-	for(int i = 0; i < nodes; i++){
-		printf("%d@%d\n", eigen_nodes[i].index, eigen_nodes[i].cluster);
-	}
 
   clusterEigenvector(clusters_file, eigen_nodes, nodes, (edges-nodes)/2, cluster_count, percentage);
 	fclose(clusters_file);

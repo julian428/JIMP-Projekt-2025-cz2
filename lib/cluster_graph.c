@@ -31,7 +31,9 @@ int assignClusters(EigenNode *nodes, EigenNode *centroids, int node_count, int c
 		}
 
 		if(nodes[i].cluster != assigned_cluster){
+			cluster_counts[nodes[i].cluster]--;
 			nodes[i].cluster = assigned_cluster;
+			cluster_counts[assigned_cluster]++;
 			changed = 1;
 		}
 	}
