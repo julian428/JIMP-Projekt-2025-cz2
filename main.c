@@ -118,7 +118,7 @@ int main(int argc, char** argv){
 		return 1;
 	}
 
-	meanClustering(eigen_nodes, nodes, cluster_count);
+	meanClustering(eigen_nodes, nodes, cluster_count, percentage / 100.0);
 	for(int i = 0; i < nodes; i++){
 		printf("%d@%d\n", eigen_nodes[i].index, eigen_nodes[i].cluster);
 	}

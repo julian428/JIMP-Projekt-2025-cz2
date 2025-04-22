@@ -10,7 +10,14 @@ double distance(EigenNode a, EigenNode b){
 
 int assignClusters(EigenNode *nodes, EigenNode *centroids, int node_count, int cluster_count, double percentage){
 	int changed = 0;
-	int max_size = (int)((1.0 + percentage) * (node_count / cluster_count));
+	int max_size = (int)ceil((1.0 + percentage) * (node_count / cluster_count));
+	int *cluster_counts = (int*)calloc(cluster_count, sizeof(int));
+
+	// wypełnienie ilości wierzchołków w klastrach
+	for(int i = 0; i < node_count; i++){
+		int cluster = nodes[i].cluster;
+		cluster_counts[cluster]++;
+	}
 
 	for(int i = 0; i < node_count; i++){
 		double minimum_distance = distance(nodes[i], centroids[0]);
@@ -18,7 +25,7 @@ int assignClusters(EigenNode *nodes, EigenNode *centroids, int node_count, int c
 
 		for(int j = 1; j < cluster_count; j++){
 			double current_distance = distance(nodes[i], centroids[j]);
-			if(current_distance > minimum_distance) continue;
+			if(current_distance > minimum_distance || cluster_counts[j] > max_size) continue;
 			minimum_distance = current_distance;
 			assigned_cluster = j;
 		}
@@ -29,6 +36,7 @@ int assignClusters(EigenNode *nodes, EigenNode *centroids, int node_count, int c
 		}
 	}
 
+	free(cluster_counts);
 	return changed;
 }
 
