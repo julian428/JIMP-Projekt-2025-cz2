@@ -3,6 +3,7 @@
 #include "lib/read_graph.h"
 #include "lib/utils.h"
 #include "lib/visualize_graph.h"
+#include "lib/cluster_graph.h"
 
 #include <stdio.h>
 
@@ -85,13 +86,13 @@ int main(int argc, char** argv){
 
 	// koniec przygotowywania
 
-	double* eigenvector = inversePowerIteration(laplacian, nodes, edges, NULL);
+	double* eigenvector = inversePowerIteration(laplacian, nodes, edges, NULL, 0.001);
 	if(!eigenvector){
 		fprintf(stderr, "\tNie udało się znaleźć wektora własnego.\n");
 		return 1;
 	}
 
-	double* eigenvector2 = inversePowerIteration(laplacian, nodes, edges, eigenvector);
+	double* eigenvector2 = inversePowerIteration(laplacian, nodes, edges, eigenvector, 0.5);
 	if(!eigenvector2){
 		fprintf(stderr, "\tNie udało się znaleźć drugiego wektora własnego.\n");
 		return 1;
@@ -116,6 +117,8 @@ int main(int argc, char** argv){
 		free(eigenvector);
 		return 1;
 	}
+
+	meanClustering(eigen_nodes, nodes, cluster_count, percentage / 100.0);
 
   clusterEigenvector(clusters_file, eigen_nodes, nodes, (edges-nodes)/2, cluster_count, percentage);
 	fclose(clusters_file);

@@ -12,7 +12,7 @@ int comparenodes(const void *a, const void *b) {
 }
 
 int compareEigenNodes(const void *a, const void *b) {
-    double len_x = ((EigenNode *)a)->x - ((EigenNode *)b)->x;
-    double len_y = ((EigenNode *)a)->y - ((EigenNode *)b)->y;
-    return (len_x > 0) - (len_x < 0);
+	int clusterA = ((EigenNode *)a)->cluster;
+	int clusterB = ((EigenNode *)b)->cluster;
+  return (clusterA > clusterB) - (clusterA < clusterB);
 }
