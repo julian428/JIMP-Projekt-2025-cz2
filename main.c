@@ -3,6 +3,7 @@
 #include "lib/read_graph.h"
 #include "lib/utils.h"
 #include "lib/visualize_graph.h"
+#include "lib/cluster_graph.h"
 
 #include <stdio.h>
 
@@ -115,6 +116,11 @@ int main(int argc, char** argv){
 		fprintf(stderr, "\tNie udało się otworzyć pliku \"%s\" do zapisania klastrów.\n", output_file);
 		free(eigenvector);
 		return 1;
+	}
+
+	meanClustering(eigen_nodes, nodes, cluster_count);
+	for(int i = 0; i < nodes; i++){
+		printf("%d@%d\n", eigen_nodes[i].index, eigen_nodes[i].cluster);
 	}
 
   clusterEigenvector(clusters_file, eigen_nodes, nodes, (edges-nodes)/2, cluster_count, percentage);

@@ -2,10 +2,6 @@
 
 int createGraphFile(char* input_file, char* output_file){
 	char buffer[512];
-	//sprintf(buffer, "./jimp2/projekt-4/bin/translate %s %s", input_file, output_file);
-	//int first_try = system(buffer);
-	//if(first_try == 0) return first_try;
-	
 	sprintf(buffer, "./jimp2/projekt-4/bin/graphdecoder %s > %s", input_file, output_file);
 	return system(buffer);
 }
@@ -64,29 +60,28 @@ Node* fileToSparseMatrix(FILE* file, int* foreign_nodes, int* foreign_edges){
 }
 
 void clusterEigenvector(FILE* output_file, EigenNode *eigen_nodes, int nodes, int edges, int cluster_count, double percentage) {
-    qsort(eigen_nodes, nodes, sizeof(EigenNode), compareEigenNodes);
+  qsort(eigen_nodes, nodes, sizeof(EigenNode), compareEigenNodes);
 
-    int ideal_cluster_size = nodes / cluster_count;
-    double max_cluster_size = ceil(ideal_cluster_size * (1 + percentage / 100.0));
-    int remainder = nodes % cluster_count;
+  int ideal_cluster_size = nodes / cluster_count;
+  double max_cluster_size = ceil(ideal_cluster_size * (1 + percentage / 100.0));
+  int remainder = nodes % cluster_count;
 
-		fprintf(output_file, "nodes:%d edges:%d clusters:%d percentage:%lf cluster_size:%d\n", nodes, edges, cluster_count, percentage, ideal_cluster_size);
+	fprintf(output_file, "nodes:%d edges:%d clusters:%d percentage:%lf cluster_size:%d\n", nodes, edges, cluster_count, percentage, ideal_cluster_size);
 
-    int current_index = 0;
-    for (int c = 0; c < cluster_count; c++) {
-        int cluster_size = ideal_cluster_size + (remainder > 0 ? 1 : 0);
-        if (cluster_size > max_cluster_size) {
-            cluster_size = (int)max_cluster_size;
-        }
-        remainder--;
+	int absolute_cluster = eigen_nodes[0].cluster;
+  for(int i = 0; i < nodes; i++){
+		EigenNode node = eigen_nodes[i];
+		int current_cluster = node.cluster;
 
-        for (int j = 0; j < cluster_size && current_index < nodes; j++) {
-						eigen_nodes[current_index].cluster = c;
-            fprintf(output_file, "%d;%d@%lf;%lf ", eigen_nodes[current_index].index, eigen_nodes[current_index].cluster, eigen_nodes[current_index].x, eigen_nodes[current_index].y);
-            current_index++;
-        }
-        fprintf(output_file, "\n");
-    }
+		if(current_cluster != absolute_cluster){
+			fprintf(output_file, "\n");
+			absolute_cluster = current_cluster;
+		}
+
+		fprintf(output_file, "%d;%d@%lf;%lf ", node.index, current_cluster, node.x, node.y);
+	}
+
+	fprintf(output_file, "\n");
 
 	FILE* connectionsfile = fopen("output.txt", "r");
 	skipPMatrix(connectionsfile);
