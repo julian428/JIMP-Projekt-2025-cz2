@@ -16,11 +16,12 @@ int assignClusters(EigenNode *nodes, EigenNode *centroids, int node_count, int c
 	// wypełnienie ilości wierzchołków w klastrach
 	for (int i = 0; i < node_count; i++) {
 		int cluster = nodes[i].cluster;
+		if(cluster < 0) continue;
 		cluster_counts[cluster]++;
 	}
 
 	for (int i = 0; i < node_count; i++) {
-		int best_cluster = -1;
+		int best_cluster = rand() % cluster_count;
 		double best_distance = DBL_MAX;
 
 		for (int j = 0; j < cluster_count; j++) {
@@ -33,8 +34,9 @@ int assignClusters(EigenNode *nodes, EigenNode *centroids, int node_count, int c
 			}
 		}
 
-		if (best_cluster != -1 && best_cluster != nodes[i].cluster) {
-			cluster_counts[nodes[i].cluster]--;
+		if (best_cluster != nodes[i].cluster) {
+			int previous_cluster = nodes[i].cluster;
+			if(previous_cluster >= 0) cluster_counts[nodes[i].cluster]--;
 			cluster_counts[best_cluster]++;
 			nodes[i].cluster = best_cluster;
 			changed = 1;
@@ -52,6 +54,7 @@ void updateCentroids(EigenNode *nodes, EigenNode *centroids, int node_count, int
 
 	for(int i = 0; i < node_count; i++){
 		int cluster = nodes[i].cluster;
+		if(cluster < 0) continue;
 		sumX[cluster] += nodes[i].x;
 		sumY[cluster] += nodes[i].y;
 		count[cluster]++;
