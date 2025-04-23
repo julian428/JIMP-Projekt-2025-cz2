@@ -6,8 +6,10 @@
 #include "lib/cluster_graph.h"
 
 #include <stdio.h>
+#include <time.h>
 
 int main(int argc, char** argv){
+	srand(time(NULL));
 	int nodes = 0;
 	int edges = 0;	
 	char* output_file = "clusters.clusters";
@@ -92,7 +94,7 @@ int main(int argc, char** argv){
 		return 1;
 	}
 
-	double* eigenvector2 = inversePowerIteration(laplacian, nodes, edges, eigenvector, 0.5);
+	double* eigenvector2 = inversePowerIteration(laplacian, nodes, edges, eigenvector, 0.1);
 	if(!eigenvector2){
 		fprintf(stderr, "\tNie udało się znaleźć drugiego wektora własnego.\n");
 		return 1;
@@ -108,7 +110,7 @@ int main(int argc, char** argv){
 		eigen_nodes[i].index = i;
 		eigen_nodes[i].x = eigenvector[i];
 		eigen_nodes[i].y = eigenvector2[i];
-		eigen_nodes[i].cluster = 0;
+		eigen_nodes[i].cluster = -1;
 	}
 
 	FILE* clusters_file = fopen(output_file, "w");
