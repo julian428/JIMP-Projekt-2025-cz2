@@ -94,7 +94,7 @@ int main(int argc, char** argv){
 		return 1;
 	}
 
-	double* eigenvector2 = inversePowerIteration(laplacian, nodes, edges, eigenvector, 0.1);
+	double* eigenvector2 = inversePowerIteration(laplacian, nodes, edges, eigenvector, 1/cluster_count);
 	if(!eigenvector2){
 		fprintf(stderr, "\tNie udało się znaleźć drugiego wektora własnego.\n");
 		return 1;
