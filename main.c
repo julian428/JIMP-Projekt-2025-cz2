@@ -121,12 +121,11 @@ int main(int argc, char** argv){
 	}
 
 	meanClustering(eigen_nodes, nodes, cluster_count, percentage / 100.0);
-
   clusterEigenvector(clusters_file, eigen_nodes, nodes, (edges-nodes)/2, cluster_count, percentage);
 	fclose(clusters_file);
 
 	if(generate_dot){
-		createDotFile("output.txt", output_file, dot_file, cluster_count);
+		createDotFile(output_file, dot_file);
 	}
 
 	free(eigenvector2);
