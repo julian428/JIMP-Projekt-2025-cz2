@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-void createDotFile(char* connectionsfile_name, char* clusterfile_name, char* dotfile_name, int clusters);
+void createDotFile(char* clusters_file_name, char* dotfile_name);
 
 #endif

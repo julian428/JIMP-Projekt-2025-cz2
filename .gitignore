@@ -10,3 +10,4 @@ calgrind.out.*
 *.out
 *.clusters
 *.cluster
+*.pdf

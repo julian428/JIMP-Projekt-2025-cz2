@@ -27,12 +27,3 @@ sub:
 	rm -rf $(SUBREPO)
 	git clone https://github.com/yallxe/jimp2
 	make -C $(SUBMODULE)
-
-TEST_SRC = test.c
-TEST_EXEC = bin/test
-
-test: $(TEST_EXEC)
-	./$(TEST_EXEC)
-
-$(TEST_EXEC): $(TEST_SRC) | bin
-	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_EXEC) $(LDFLAGS)
