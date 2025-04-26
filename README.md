@@ -2,11 +2,6 @@
 # Dzielenie grafu
 
 Ten program jest drugą częścią projektu na jimp2, ma na celu dzielić graf na k klastrów, każdy klaster ma mieć rozmiar +/- n% w stosunku do innych klastrów. Używa on program stworzony przez inną grupę, który transkrybuje plik .csrrg na plik zawierający macierz pozycji oraz krawędzie grafu.
-
-#### Spis treści
-1. [Dokumentacja implementacyjna](#Dokumentacja%20implementacyjna)
-2. [Dokumentacja funkcjonalna](#Dokumentacja%20funkcjonalna)
-3. [Dokumentacja algorytmiczna](#Dokumentacja%20algorytmiczna)
 ## Dokumentacja implementacyjna
 Czyli jak używać programu.
 
@@ -83,52 +78,36 @@ Wejście
 
 Wyjście
 ```clusters.txt
-nodes:6 clusters:2 percentage:10.000000 cluster_size:3
-0 1 2
-3 4 5
+nodes:6 edges:8 clusters:3 percentage:10.000000 cluster_size:2
+0;0@0.577009;-0.532573 5;0@-0.577846;-0.531974
+1;1@0.288783;0.459205 2;1@0.288831;0.072487
+3;2@-0.288446;0.072418 4;2@-0.288331;0.460436
+0 -> 1
+0 -> 2
+1 -> 2
+1 -> 4
+2 -> 3
+3 -> 4
+3 -> 5
+4 -> 5
+
 ```
 
 W pliku wyjściowym pierwsza linijka jest linijką informacyjnną zawierającą:
 - nodes - ilość wierzchołków
+- edges - ilość krawędzi
 - clusters - ilość klastrów
 - percentage - dozwolona różnica rozmiaru od idealnego rozmiaru klastra
 - cluster_size - idealny rozmiar klastra
 
-A każda następna linijka to oddzielny klaster
+Następne "clusters" linijek przedstawia klastry gdzie każdy wierzchołek jest oddzielony od innych spacją i jest zapisany w formacie:
+`number_wierzchołka;numer_klastra@x;y`
+
+Następnie po linijkach z klastrami jest "edges" linijek z połączeniami w formacie:
+`wierzchołek_z -> wierzchołek_do`
 
 #### Wygląd grafu z podanych przykładów powyżej.
 !["zdjęcie przykładowego grafu"](assets/example_graph.png)
-
-
-### Uruchamianie testów
-Aby uruchomić testy dzielenia grafu należy w folderze z projektem:
-
-```bash
-make test
-```
-
-Wynik tego polecenia będzie podobny do tego:
-
-```test
-SUCCESS. graf1.csrrg@c=714 p=84.990000
-SUCCESS. graf2.csrrg@c=481 p=63.210000
-SUCCESS. graf3.csrrg@c=407 p=1.860000
-SUCCESS. graf4.csrrg@c=261 p=88.560000
-SUCCESS. graf5.csrrg@c=813 p=74.960000
-SUCCESS. graf6.csrrg@c=497 p=83.600000
-```
-
-gdzie:
-
-**SUCCESS** - plik z klastrami jest zgodny z informacjami podanymi przez użytkownika czyli ilość klastrów i ich rozmiar się zgadza lub jest w granicach procentowych podanych przez użytkownika.
-
-**WARNING** - granica procentowa jest za mała dla podanych parametrów. Na przykład kiedy chcemy podzielić graf 6 wierzchołkowy na 4 klastry część klastrów będzie musiała mieć rozmiar 2, a jest to 100% więcej od rozmiaru idealnego, czyli gdyby użytkownik podał wartość 10% to ta wartość jest nie możliwa i wtedy pokazywany jest komunikat **WARNING**
-
-**FAILURE** - jest pokazywany kiedy rozmiar grafu przekracza podaną oraz minimalną wartość procentową zmiany rozmiaru klastru.
-
-Następnie podawana jest nazwa pliku, który był testowany a po znaku `@`:
-**c** - ilość klastrów wylosowanych do testu
-**p** - procent marginesu wylosowany do testu
 
 ## Dokumentacja funkcjonalna
 
@@ -297,8 +276,9 @@ Ale mozna latwo zauwazyc ze jest to poprostu ten sam wektor przeskalowany przez 
 7. Ostatnim krokiem programu jest podzielenie grafu na podstawie policzonego wektora własnego  i zapisanie klastrów do pliku. Do każdego wierzchołka przypisana jest odpowiadająca wartość wektora. Czyli 1 wartośc wektora jest przypisywana do pierwszego wierzchołka.
    
 ```c
-FILE* clusters_file = fopen(output_file, "w");
-clusterEigenvector(clusters_file, eigenvector, nodes, cluster_count, percentage);
+meanClustering(eigen_nodes, nodes, cluster_count, percentage / 100.0);
+
+clusterEigenvector(clusters_file, eigen_nodes, nodes, (edges-nodes)/2, cluster_count, percentage);
 ```
 
 Podział jest robiony na podstawie odległości pomiędzy wartościami przypisanym do wierzchołków. Czyli wierchołki z przypisanymi wartościami $[-2, -1, -1]$ będą powiązane ze sobą w jednym klastrze a $[1, 1, 2]$ w drugim.
@@ -306,26 +286,19 @@ Podział jest robiony na podstawie odległości pomiędzy wartościami przypisan
 Wynikiem przykładu jest podział na dwa klastry:
 
 ```
-nodes:6 clusters:2 percentage:10.000000 cluster_size:3
-0 1 2
-3 4 5
+nodes:6 edges:8 clusters:3 percentage:10.000000 cluster_size:2
+0;0@0.577009;-0.532573 5;0@-0.577846;-0.531974
+1;1@0.288783;0.459205 2;1@0.288831;0.072487
+3;2@-0.288446;0.072418 4;2@-0.288331;0.460436
+0 -> 1
+0 -> 2
+1 -> 2
+1 -> 4
+2 -> 3
+3 -> 4
+3 -> 5
+4 -> 5
+
 ```
-
-## Dokumentacja algorytmiczna
-
-Algorytmem używanym do dzielenia grafu jest `Spectral Clustering`. Algorytm ten umożliwia podział na podstawie dowolnej macierzy podobieństwa zawierającej informacje na temat powiązania pomiędzy danymi wierzchołkami. W tym programie macierzą podobieństwa jest macierz sąsiedztwa.
-
-1. Macierz Laplace'a
-   Macierz Laplace'a jest dyskretną wersją [operatora Laplace'a](https://pl.wikipedia.org/wiki/Operator_Laplace%E2%80%99a). Mierzy jak funkcja jest zmienna poprzez graf. Licząc wektory własne macierzy Laplace'a dostajemy tak naprawdę funkcje ciągłe które zmieniają się najmniej pomiędzy połączonymi wierzchołkami. Dzięki temu możemy odpowiednio podzielić graf na klastry.
-2. Metoda `Inverse Power Iteration Method`
-   Jeżeli zastosujemy Metodę [Power Iteration](https://en.wikipedia.org/wiki/Power_iteration) to macierzy odwrotnej dostaniemy najmniejszy wektor własny wyłączając wektor zerowy. 
-   Metoda ta działa podobnie jak [Metoda Newtona](https://en.wikipedia.org/wiki/Newton%27s_method) gdzie najpierw zgadujemy poprawną odpowiedź a w następnych iteracjach poprawiamy ją.
-   W naszym przypadku musimy policzyć wyznacznik z macierzy Laplace'a minus macierz lambda:
-
-   $$
-   det(L - \lambda I) = 0
-   $$
-   
-   Aby uzyskać wynik iterujemy po coraz lepszych wersjaach wektora własnego aż powyższe działanie jest wystarczająco dokładne. Używamy do tego metody [Gauss - Siedel](https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method) .
    
    
