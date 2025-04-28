@@ -75,12 +75,16 @@ double* gaussSeidelSolver(Node* sparse_matrix, int nodes, int edges, double* x, 
 			}
 
 			if(row == column){
+				//printf("diag_val: %lf, sigma: %lf, illegal: %lf\n", value, sigma, value - 2.5);
 				diagonal_value = value - sigma;
 				continue;
 			}
 
 			sum += value * solution[column];
 		}
+
+		solution[current_row] = (x[current_row] - sum) / diagonal_value;
+
 
 		double err = normalizedVectorDifference(solution, previous_solution, nodes);
 		if(err < TOL){

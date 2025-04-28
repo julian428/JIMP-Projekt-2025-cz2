@@ -81,7 +81,6 @@ int main(int argc, char** argv){
 		free(adjc);
 		return 1;
 	}
-	free(adjc);
 	edges += nodes;
 
   qsort(laplacian, edges, sizeof(Node), comparenodes);
@@ -94,10 +93,16 @@ int main(int argc, char** argv){
 		return 1;
 	}
 
-	double* eigenvector2 = inversePowerIteration(laplacian, nodes, edges, eigenvector, 1/(double)cluster_count);
+	double* eigenvector2 = inversePowerIteration(laplacian, nodes, edges, eigenvector, 1.0/(nodes/cluster_count));
 	if(!eigenvector2){
 		fprintf(stderr, "\tNie udało się znaleźć drugiego wektora własnego.\n");
 		return 1;
+	}
+
+	double correct[] = {0, 1.0, -1.0, -1.0, 1.0, 0};
+	for(int i = 0; i < nodes; i++){
+		double current_ratio = correct[i] / eigenvector2[i];
+		printf("ratio: %lf\n", current_ratio);
 	}
 
   EigenNode *eigen_nodes = (EigenNode*)malloc(nodes * sizeof(EigenNode));
@@ -131,5 +136,6 @@ int main(int argc, char** argv){
 	free(eigenvector2);
   free(eigenvector);
 	free(laplacian);
+	free(adjc);
 	return 0;
 }

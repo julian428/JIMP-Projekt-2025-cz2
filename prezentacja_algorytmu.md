@@ -40,7 +40,7 @@ $$
 
 ---
 
-## Podobieństwa
+## Po co nam wektory własne?
 Macierz Laplace'a i jej wektory własne są bardzo podobne do tego jak przy całkowaniu możemy przejść z współrzędnych kartezjańskich na biegunowe. Po przejściu na spektrum macierzy ( przestrzeń wektorów własnych ) łatwiej jest nam podzielić graf na klastry ponieważ wierzchołki dobrze połączone są blisko siebie w przestrzeni wektorowej.
 
 ---
@@ -77,7 +77,7 @@ A = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-Macierz sąsiedztwa musi być symetryczna ponieważ w innym przypdaku wektory własne macierzy Laplace'a nie były by orthagonalne.
+W macierzy symetrycznej wszystkie wektory własne są do siebie prostopadłe.
 
 ---
 ## 2. Macierz Laplace'a
@@ -122,7 +122,7 @@ Tutaj znowu od razu widać jak najlepiej podzielić graf na dwie części.
 
 ---
 ## 3. Liczenie wektora własnego
-Do policzenia wektora własnego używamy metody **Inverse Power Iteration**, następnie do każdego wierzchołka przypisujemy jego odpowiadającą wartość w wektorze własnym.
+Do policzenia wektora własnego używamy metody **shifted Inverse Power Iteration**, następnie do każdego wierzchołka przypisujemy jego odpowiadającą wartość w wektorze własnym.
 
 ![graf z wartościami](assets/colored_graph.png)
 
@@ -130,11 +130,68 @@ Po przejściu na spektrum macierzy:
 ![wierzchołki w spektrum](assets/nodes_on_spectrum.png)
 
 ---
-### Jak liczymy wektory własne
+### Jak działa *Shifted Inverse Power Iteration*
 
-Kilka słów o metodzie shiftedInversePowerMethod i wizualizacja
-Kilka słów o metodzie gausa siedla i wizualizacja + wzór
+Ta metoda polega na znalezieniu wektora własnego, który jest najbliżej podanej wartości.
+Używająć wzoru $(A-\sigma I)x_{n+1}=x_n$. Ten wzór został wyprowadzony z wzoru $(A-\sigma I)^{-1}v = \frac{1}{\lambda - \sigma}v$. Gdzie widzimy że wartość najbliższa $\sigma$ jest teraz najbardziej znacząca.
 
+![omega](assets/shifted_inverse_power_iteration_method.png)
+
+---
+### Przykład
+Dla macierzy $A = \begin{pmatrix} 2 & 1 \\ 1 & 3 \end{pmatrix}$ oraz $\sigma = 3.5$:
+<br>
+
+1. **Macierz przesunięta ( *shifted* )**
+   $$
+   A-\sigma I = \begin{bmatrix} 2-3.5 & 1 \\ 1 & 3 - 3.5 \end{bmatrix} = 
+   \begin{bmatrix} -1.5 & 1 \\ 1 & -0.5 \end{bmatrix}
+   $$
+   <br>
+2. **Wybieramy początkowy wektor**
+   $$
+   x_0 = \begin{pmatrix} 1 \\ 0 \end{pmatrix}
+   $$
+   
+---
+3. **Podstawiamy wszystko do wzoru**
+   
+   $$
+   \begin{bmatrix} -1.5 & 1 \\ 1 & -0.5 \end{bmatrix}x_1=\begin{bmatrix} 1 \\ 0 \end{bmatrix}
+   $$
+   <br>
+   
+   $$
+   \begin{cases}
+   -1.5x_{1a} + x_{1b} = 1 \\
+   x_{1a}-0.5x_{1b}=0
+   \end{cases}
+   $$
+   Z tego możemy policzyć:
+   $$
+   x_1=\begin{pmatrix} 2 \\ 4 \end{pmatrix}
+   $$
+
+---
+4. **Następnie normalizujemy i powtarzamy poprzednie kroki aż $x_n \approx x_{n+1}$**
+   $$
+   ||x_{1}||=\sqrt{2^2+4^2}=2\sqrt{5}
+   $$
+   $$
+   x_1=\frac{1}{2\sqrt{5}}\begin{bmatrix} 2 \\ 4 \end{bmatrix}=\begin{bmatrix} \frac{1}{\sqrt{5}} \\ \frac{2}{\sqrt{5}} \end{bmatrix}
+   $$
+  
+ ---
+   
+5. **Po spełnieniu wymagań aproksymacji wektora dostajemy**
+   W tym przypdaku zakończyłem proces do aproksymacji do 3 miejsc po przecinku
+
+   $$
+   x \approx \begin{pmatrix} 0.526 \\ 0.851 \end{pmatrix}
+   $$
+6. **Ostatnim krokiem jest przypisanie każdej wartości z wektora do każdego wierzchołka**
+   Czyli pierwszy wierzchołek dostaje pierwszą wartość wektora własnego itd.
+   
 ---
 ## 4. Dzielenie grafu
 
@@ -155,4 +212,5 @@ Podzielony graf na dwa klastry:
 - [Macierz Laplace'a (wikipedia)](https://en.wikipedia.org/wiki/Laplacian_matrix)
 - [Spektrum Macierzy (wikipedia)](https://en.wikipedia.org/wiki/Spectrum_of_a_matrix)
 - [Operator Laplace'a (youtube)](https://www.youtube.com/watch?v=EW08rD-GFh0)
+- [Spectral clustering (youtub)](https://youtu.be/uxsDKhZHDcc?si=33hIhrfPiwN_16aT)
 - [Shifted Inverse Power Iteration Method (youtube)](https://www.youtube.com/watch?v=Cd2Nty4V-dk)
